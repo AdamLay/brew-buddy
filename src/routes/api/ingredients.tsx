@@ -1,32 +1,25 @@
 import { prisma } from "@/lib/db";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { ingredientSchema, parseIngredientFormData } from "@/lib/ingredient-validation";
 
 export const Route = createFileRoute("/api/ingredients")({
-  component: function ApiPage() { return null; },
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        if (request.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405 });
+
+        const formData = await request.formData();
+        const data = parseIngredientFormData(formData);
+
+        const parsed = ingredientSchema.safeParse(data);
+        if (!parsed.success) {
+          const firstError = parsed.error.issues[0]?.message ?? "Validation failed";
+          return new Response(null, { status: 302, headers: { Location: `/ingredients/new?error=${encodeURIComponent(firstError)}` } });
+        }
+
+        await prisma.ingredient.create({ data: parsed.data });
+        return new Response(null, { status: 302, headers: { Location: "/ingredients" } });
+      },
+    },
+  },
 });
-
-function parseFormData(formData: FormData) {
-  const name = formData.get("name") as string;
-  const description = (formData.get("description") as string) || undefined;
-  const type = (formData.get("type") as string) || undefined;
-
-  return {
-    name,
-    description: description || null,
-    type: type || null,
-  };
-}
-
-export async function loader({ request }: { request: Request }) {
-  if (request.method !== "POST") return {};
-
-  const formData = await request.formData();
-  const data = parseFormData(formData);
-
-  if (!data.name.trim()) {
-    throw redirect({ to: "/ingredients/new", search: { error: "Name is required" } });
-  }
-
-  await prisma.ingredient.create({ data });
-  throw redirect({ to: "/ingredients" });
-}

@@ -2,6 +2,10 @@ import { prisma } from "@/lib/db";
 import { createFileRoute } from "@tanstack/react-router";
 import type { Ingredient as IngredientType } from "@/generated/prisma/client";
 
+const DESCRIPTION_TRUNCATE = 60;
+
+type IngredientWithCount = IngredientType & { _count: { recipes: number } };
+
 export const Route = createFileRoute("/ingredients/")({
   component: IngredientsPage,
   loader: async () => {
@@ -26,7 +30,9 @@ function IngredientsPage() {
 
       {ingredients.length === 0 ? (
         <div className="text-center py-16 bg-base-100 rounded-xl">
-          <p className="text-gray-500 text-lg mb-4">No ingredients yet. Create your first ingredient!</p>
+          <p className="text-gray-500 text-lg mb-4">
+            No ingredients yet. Create your first ingredient!
+          </p>
           <a href="/ingredients/new" className="btn btn-primary">
             Create Ingredient
           </a>
@@ -46,7 +52,7 @@ function IngredientsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ingredients.map((ingredient: IngredientType & { _count: { recipes: number } }) => (
+                  {ingredients.map((ingredient: IngredientWithCount) => (
                     <tr key={ingredient.id} className="hover">
                       <td>
                         <div className="font-medium">{ingredient.name}</div>
@@ -54,25 +60,27 @@ function IngredientsPage() {
                       <td>
                         {ingredient.type ? (
                           <span className="badge badge-outline">
-                            {ingredient.type.charAt(0).toUpperCase() + ingredient.type.slice(1).toLowerCase()}
+                            {ingredient.type.charAt(0).toUpperCase() +
+                              ingredient.type.slice(1).toLowerCase()}
                           </span>
                         ) : (
                           "—"
                         )}
                       </td>
                       <td className="text-sm">
-                        {ingredient.description ? (
-                          ingredient.description.length > 60
-                            ? ingredient.description.slice(0, 60) + "..."
+                        {ingredient.description
+                          ? ingredient.description.length > DESCRIPTION_TRUNCATE
+                            ? ingredient.description.slice(0, DESCRIPTION_TRUNCATE) + "..."
                             : ingredient.description
-                        ) : (
-                          "—"
-                        )}
+                          : "—"}
                       </td>
                       <td>{ingredient._count.recipes}</td>
                       <td className="text-right">
                         <div className="flex gap-2 justify-end">
-                          <a href={`/ingredients/${ingredient.id}/edit`} className="btn btn-sm btn-ghost">
+                          <a
+                            href={`/ingredients/${ingredient.id}/edit`}
+                            className="btn btn-sm btn-ghost"
+                          >
                             Edit
                           </a>
                           <DeleteButton id={ingredient.id} />

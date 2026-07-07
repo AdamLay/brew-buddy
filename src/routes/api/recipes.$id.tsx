@@ -1,10 +1,6 @@
 import { prisma } from "@/lib/db";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { recipeSchema } from "@/lib/recipe-validation";
-
-export const Route = createFileRoute("/api/recipes/$id")({
-  component: function ApiPage() { return null; },
-});
 
 function parseFormData(formData: FormData) {
   const name = formData.get("name") as string;
@@ -27,20 +23,26 @@ function parseFormData(formData: FormData) {
   };
 }
 
-export async function loader({ params, request }: { params: { id: string }; request: Request }) {
-  if (request.method !== "POST") return {};
+export const Route = createFileRoute("/api/recipes/$id")({
+  server: {
+    handlers: {
+      POST: async ({ params, request }) => {
+        if (request.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405 });
 
-  const formData = await request.formData();
-  const data = parseFormData(formData);
+        const formData = await request.formData();
+        const data = parseFormData(formData);
 
-  const parsed = recipeSchema.safeParse(data);
-  if (!parsed.success) {
-    // ponytail: TanStack Router's typed redirects don't support dynamic paths with search params;
-    // client-side HTML5 validation catches most errors. Add flash messages via cookies/session later.
-    console.error("Validation failed:", parsed.error.issues[0]?.message);
-    throw redirect({ to: `/recipes/${params.id}/edit` as any });
-  }
+        const parsed = recipeSchema.safeParse(data);
+        if (!parsed.success) {
+          // ponytail: TanStack Router's typed redirects don't support dynamic paths with search params;
+          // client-side HTML5 validation catches most errors. Add flash messages via cookies/session later.
+          console.error("Validation failed:", parsed.error.issues[0]?.message);
+          return new Response(null, { status: 302, headers: { Location: `/recipes/${params.id}/edit` } });
+        }
 
-  await prisma.recipe.update({ where: { id: params.id }, data: parsed.data });
-  throw redirect({ to: "/recipes" });
-}
+        await prisma.recipe.update({ where: { id: params.id }, data: parsed.data });
+        return new Response(null, { status: 302, headers: { Location: "/recipes" } });
+      },
+    },
+  },
+});

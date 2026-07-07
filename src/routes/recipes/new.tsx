@@ -29,7 +29,7 @@ function NewRecipePage() {
         <div className="card-body">
           <form action="/api/recipes" method="post">
             <input type="hidden" name="_method" value="create" />
-            <RecipeForm action="" />
+            <RecipeForm />
           </form>
         </div>
       </div>

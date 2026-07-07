@@ -40,7 +40,7 @@ function EditRecipePage() {
         <div className="card-body">
           <form action={`/api/recipes/${recipe.id}`} method="post">
             <input type="hidden" name="_method" value="update" />
-            <RecipeForm action="" recipe={recipe} />
+            <RecipeForm recipe={recipe} />
           </form>
         </div>
       </div>

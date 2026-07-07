@@ -54,7 +54,9 @@ function RecipesPage() {
                         <div>
                           <div className="font-medium">{recipe.name}</div>
                           {recipe.description && (
-                            <div className={`text-sm ${recipe.description.length > 80 ? 'truncate max-w-xs' : ''}`}>
+                            <div
+                              className={`text-sm ${recipe.description.length > 80 ? "truncate max-w-xs" : ""}`}
+                            >
                               {recipe.description}
                             </div>
                           )}
@@ -62,7 +64,8 @@ function RecipesPage() {
                       </td>
                       <td>
                         <span className="badge badge-outline">
-                          {recipe.brewType.charAt(0).toUpperCase() + recipe.brewType.slice(1).toLowerCase()}
+                          {recipe.brewType.charAt(0).toUpperCase() +
+                            recipe.brewType.slice(1).toLowerCase()}
                         </span>
                       </td>
                       <td>{recipe.batchSize ? `${recipe.batchSize}L` : "—"}</td>
@@ -104,7 +107,9 @@ function DeleteButton({ id }: { id: string }) {
         type="submit"
         className="btn btn-sm btn-ghost text-error"
         onClick={(e) => {
-          if (!confirm("Are you sure? All associated batches and ingredients will also be deleted.")) {
+          if (
+            !confirm("Are you sure? All associated batches and ingredients will also be deleted.")
+          ) {
             e.preventDefault();
           }
         }}

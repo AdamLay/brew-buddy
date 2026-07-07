@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { IngredientForm } from "@/components/ingredient/IngredientForm";
 
 const errorSchema = z.object({
   error: z.string().optional(),
@@ -28,58 +29,10 @@ function NewIngredientPage() {
         <div className="card-body">
           <form action="/api/ingredients" method="post">
             <input type="hidden" name="_method" value="create" />
-            <IngredientForm action="" />
+            <IngredientForm />
           </form>
         </div>
       </div>
-    </div>
-  );
-}
-
-function IngredientForm({ action }: { action: string }) {
-  return (
-    <div className="space-y-4">
-      <div className="form-control w-full">
-        <label className="label">
-          <span className="label-text required">Name *</span>
-        </label>
-        <input
-          name="name"
-          type="text"
-          placeholder="e.g. Granny Smith Apple"
-          className="input input-bordered w-full"
-          required
-        />
-      </div>
-
-      <div className="form-control w-full">
-        <label className="label">
-          <span className="label-text">Type</span>
-        </label>
-        <select name="type" className="select select-bordered w-full">
-          <option value="">Select type...</option>
-          <option value="juice">Juice</option>
-          <option value="fruit">Fruit</option>
-          <option value="sugar">Sugar / Sweetener</option>
-          <option value="yeast">Yeast</option>
-          <option value="hops">Hops</option>
-          <option value="spice">Spice / Herb</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <div className="form-control w-full">
-        <label className="label">
-          <span className="label-text">Description</span>
-        </label>
-        <textarea
-          name="description"
-          className="textarea textarea-bordered h-24"
-          placeholder="Optional description..."
-        />
-      </div>
-
-      <button className="btn btn-primary mt-4">Create Ingredient</button>
     </div>
   );
 }

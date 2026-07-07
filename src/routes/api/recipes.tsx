@@ -1,10 +1,6 @@
 import { prisma } from "@/lib/db";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { recipeSchema } from "@/lib/recipe-validation";
-
-export const Route = createFileRoute("/api/recipes")({
-  component: function ApiPage() { return null; },
-});
 
 function parseFormData(formData: FormData) {
   const name = formData.get("name") as string;
@@ -27,18 +23,24 @@ function parseFormData(formData: FormData) {
   };
 }
 
-export async function loader({ request }: { request: Request }) {
-  if (request.method !== "POST") return {};
+export const Route = createFileRoute("/api/recipes")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        if (request.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405 });
 
-  const formData = await request.formData();
-  const data = parseFormData(formData);
+        const formData = await request.formData();
+        const data = parseFormData(formData);
 
-  const parsed = recipeSchema.safeParse(data);
-  if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message ?? "Validation failed";
-    throw redirect({ to: "/recipes/new", search: { error: firstError } });
-  }
+        const parsed = recipeSchema.safeParse(data);
+        if (!parsed.success) {
+          const firstError = parsed.error.issues[0]?.message ?? "Validation failed";
+          return new Response(null, { status: 302, headers: { Location: `/recipes/new?error=${encodeURIComponent(firstError)}` } });
+        }
 
-  await prisma.recipe.create({ data: parsed.data });
-  throw redirect({ to: "/recipes" });
-}
+        await prisma.recipe.create({ data: parsed.data });
+        return new Response(null, { status: 302, headers: { Location: "/recipes" } });
+      },
+    },
+  },
+});

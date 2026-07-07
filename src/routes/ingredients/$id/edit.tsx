@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
+import { IngredientForm } from "@/components/ingredient/IngredientForm";
 
 const errorSchema = z.object({
   error: z.string().optional(),
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/ingredients/$id/edit")({
       where: { id: params.id },
     });
     if (!ingredient) {
-      throw new Error("Ingredient not found");
+      throw redirect({ to: "/ingredients" });
     }
     return { ingredient };
   },
@@ -39,59 +40,10 @@ function EditIngredientPage() {
         <div className="card-body">
           <form action={`/api/ingredients/${ingredient.id}`} method="post">
             <input type="hidden" name="_method" value="update" />
-            <IngredientForm action="" ingredient={ingredient} />
+            <IngredientForm ingredient={ingredient} submitLabel="Update Ingredient" />
           </form>
         </div>
       </div>
-    </div>
-  );
-}
-
-function IngredientForm({ action, ingredient }: { action: string; ingredient: any }) {
-  return (
-    <div className="space-y-4">
-      <div className="form-control w-full">
-        <label className="label">
-          <span className="label-text required">Name *</span>
-        </label>
-        <input
-          name="name"
-          type="text"
-          defaultValue={ingredient.name}
-          placeholder="e.g. Granny Smith Apple"
-          className="input input-bordered w-full"
-          required
-        />
-      </div>
-
-      <div className="form-control w-full">
-        <label className="label">
-          <span className="label-text">Type</span>
-        </label>
-        <select name="type" defaultValue={ingredient.type || ""} className="select select-bordered w-full">
-          <option value="">Select type...</option>
-          <option value="fruit">Fruit</option>
-          <option value="sugar">Sugar / Sweetener</option>
-          <option value="yeast">Yeast</option>
-          <option value="hops">Hops</option>
-          <option value="spice">Spice / Herb</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <div className="form-control w-full">
-        <label className="label">
-          <span className="label-text">Description</span>
-        </label>
-        <textarea
-          name="description"
-          defaultValue={ingredient.description || ""}
-          className="textarea textarea-bordered h-24"
-          placeholder="Optional description..."
-        />
-      </div>
-
-      <button className="btn btn-primary mt-4">Update Ingredient</button>
     </div>
   );
 }
