@@ -16,7 +16,7 @@ function NewRecipePage() {
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <a href="/" className="btn btn-ghost btn-sm mb-4">
+      <a href="/recipes" className="btn btn-ghost btn-sm mb-4">
         &larr; Back to Recipes
       </a>
       <h1 className="text-3xl font-bold mb-6">New Recipe</h1>

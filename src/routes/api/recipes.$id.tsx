@@ -42,5 +42,5 @@ export async function loader({ params, request }: { params: { id: string }; requ
   }
 
   await prisma.recipe.update({ where: { id: params.id }, data: parsed.data });
-  throw redirect({ to: "/" });
+  throw redirect({ to: "/recipes" });
 }

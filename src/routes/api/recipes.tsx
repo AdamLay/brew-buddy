@@ -40,5 +40,5 @@ export async function loader({ request }: { request: Request }) {
   }
 
   await prisma.recipe.create({ data: parsed.data });
-  throw redirect({ to: "/" });
+  throw redirect({ to: "/recipes" });
 }

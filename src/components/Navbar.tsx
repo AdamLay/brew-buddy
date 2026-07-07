@@ -14,19 +14,24 @@ export function Navbar() {
         <div className="navbar-end">
           <ul className="flex gap-2 list-none">
             <li>
-              <Link
-                to="/"
-                className={`btn btn-ghost ${pathname === "/" ? "btn-active" : ""}`}
-              >
+              <Link to="/" className={`btn btn-ghost ${pathname === "/" ? "btn-active" : ""}`}>
                 Home
               </Link>
             </li>
             <li>
               <Link
-                to="/"
-                className={`btn btn-ghost ${pathname === "/" ? "btn-active" : ""}`}
+                to="/recipes"
+                className={`btn btn-ghost ${pathname === "/recipes" ? "btn-active" : ""}`}
               >
                 Recipes
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/ingredients"
+                className={`btn btn-ghost ${pathname === "/ingredients" ? "btn-active" : ""}`}
+              >
+                Ingredients
               </Link>
             </li>
             <li>
