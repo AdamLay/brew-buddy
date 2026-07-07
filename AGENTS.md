@@ -1,3 +1,23 @@
+# Brew Buddy — Brewing Companion App
+
+Brew Buddy is a brewing companion application for home brewers who make cider, fruit wine, mead, beer, and other fermented beverages. It helps users plan recipes, track individual brew batches through every stage of fermentation, and record tasting notes and observations along the way.
+
+## Purpose
+
+The app serves two core concepts:
+
+- **Recipes** — Reusable templates that define what to brew (ingredients, instructions, target gravity, batch size). Recipes are the blueprint.
+- **Batches** — Concrete instances where a recipe is actually brewed. Each batch tracks its own progress, gravity readings, status, and notes over time.
+
+A single recipe can have many batches, but each batch belongs to exactly one recipe. This mirrors how home brewers work: you perfect a recipe on paper, then brew it multiple times, learning something new with every batch.
+
+## Tech Stack
+
+- **Frontend**: React 19 + TanStack Router + Vite
+- **Styling**: Tailwind CSS 4 + DaisyUI
+- **Database**: PostgreSQL via Prisma ORM
+- **Runtime**: TanStack Start (full-stack React)
+
 <!-- intent-skills:start -->
 
 # TanStack Intent - before editing files, run the matching guidance command.

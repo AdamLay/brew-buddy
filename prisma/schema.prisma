@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client"
+  output     = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Recipe {
+  id              String          @id @default(cuid())
+  name            String
+  description     String?
+  brewType        BrewType
+  originalGravity Float?
+  finalGravity    Float?
+  batchSize       Float?          // in liters
+  instructions    String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  batches         Batch[]
+  ingredients     RecipeIngredient[]
+}
+
+model Ingredient {
+  id            String           @id @default(cuid())
+  name          String
+  description   String?
+  type          String?          // e.g. "fruit", "sugar", "yeast", "spice"
+  recipes       RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id             String   @id @default(cuid())
+  recipeId       String
+  ingredientId   String
+  amount         Float
+  unit           String   // e.g. "kg", "liters", "grams", "tbsp", "packets"
+  notes          String?
+  createdAt      DateTime @default(now())
+  recipe         Recipe   @relation(fields: [recipeId], references: id, onDelete: Cascade)
+  ingredient     Ingredient @relation(fields: [ingredientId], references: id, onDelete: Cascade)
+
+  @@unique([recipeId, ingredientId])
+}
+
+model Batch {
+  id            String   @id @default(cuid())
+  recipeId      String
+  recipe        Recipe   @relation(fields: [recipeId], references: id, onDelete: Cascade)
+  startDate     DateTime @default(now())
+  endDate       DateTime?
+  status        BatchStatus @default(PLANNING)
+  notes         String?
+  ogReading     Float?   // original gravity reading
+  fgReading     Float?   // final gravity reading
+  currentGravity Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum BrewType {
+  CIDER
+  WINE
+  BEER
+  OTHER
+}
+
+enum BatchStatus {
+  PLANNING
+  FERMENTING
+  CONDITIONING
+  BOTTLED
+  COMPLETE
+}

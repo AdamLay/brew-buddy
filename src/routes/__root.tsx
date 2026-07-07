@@ -2,6 +2,7 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
+import { Navbar } from "../components/Navbar";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -15,7 +16,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Brew Buddy",
       },
     ],
     links: [
@@ -34,8 +35,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        {children}
+      <body className="min-h-screen flex flex-col bg-base-200">
+        <Navbar />
+        <main className="flex-1">{children}</main>
         <TanStackDevtools
           config={{
             position: "bottom-right",
