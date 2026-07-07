@@ -15,8 +15,16 @@ export function Navbar() {
           <ul className="flex gap-2 list-none">
             <li>
               <Link
-                to="/recipes"
-                className={`btn btn-ghost ${pathname.startsWith("/recipes") ? "btn-active" : ""}`}
+                to="/"
+                className={`btn btn-ghost ${pathname === "/" ? "btn-active" : ""}`}
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/"
+                className={`btn btn-ghost ${pathname === "/" ? "btn-active" : ""}`}
               >
                 Recipes
               </Link>

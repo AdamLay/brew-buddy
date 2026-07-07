@@ -9,15 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RecipesRouteImport } from './routes/recipes'
 import { Route as BatchesRouteImport } from './routes/batches'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecipesNewRouteImport } from './routes/recipes.new'
+import { Route as ApiRecipesRouteImport } from './routes/api/recipes'
+import { Route as RecipesIdEditRouteImport } from './routes/recipes.$id.edit'
+import { Route as RecipesIdDeleteRouteImport } from './routes/recipes.$id.delete'
+import { Route as ApiRecipesIdRouteImport } from './routes/api/recipes.$id'
 
-const RecipesRoute = RecipesRouteImport.update({
-  id: '/recipes',
-  path: '/recipes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BatchesRoute = BatchesRouteImport.update({
   id: '/batches',
   path: '/batches',
@@ -28,46 +27,101 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecipesNewRoute = RecipesNewRouteImport.update({
+  id: '/recipes/new',
+  path: '/recipes/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRecipesRoute = ApiRecipesRouteImport.update({
+  id: '/api/recipes',
+  path: '/api/recipes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesIdEditRoute = RecipesIdEditRouteImport.update({
+  id: '/recipes/$id/edit',
+  path: '/recipes/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesIdDeleteRoute = RecipesIdDeleteRouteImport.update({
+  id: '/recipes/$id/delete',
+  path: '/recipes/$id/delete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRecipesIdRoute = ApiRecipesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiRecipesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/batches': typeof BatchesRoute
-  '/recipes': typeof RecipesRoute
+  '/api/recipes': typeof ApiRecipesRouteWithChildren
+  '/recipes/new': typeof RecipesNewRoute
+  '/api/recipes/$id': typeof ApiRecipesIdRoute
+  '/recipes/$id/delete': typeof RecipesIdDeleteRoute
+  '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/batches': typeof BatchesRoute
-  '/recipes': typeof RecipesRoute
+  '/api/recipes': typeof ApiRecipesRouteWithChildren
+  '/recipes/new': typeof RecipesNewRoute
+  '/api/recipes/$id': typeof ApiRecipesIdRoute
+  '/recipes/$id/delete': typeof RecipesIdDeleteRoute
+  '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/batches': typeof BatchesRoute
-  '/recipes': typeof RecipesRoute
+  '/api/recipes': typeof ApiRecipesRouteWithChildren
+  '/recipes/new': typeof RecipesNewRoute
+  '/api/recipes/$id': typeof ApiRecipesIdRoute
+  '/recipes/$id/delete': typeof RecipesIdDeleteRoute
+  '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/batches' | '/recipes'
+  fullPaths:
+    | '/'
+    | '/batches'
+    | '/api/recipes'
+    | '/recipes/new'
+    | '/api/recipes/$id'
+    | '/recipes/$id/delete'
+    | '/recipes/$id/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/batches' | '/recipes'
-  id: '__root__' | '/' | '/batches' | '/recipes'
+  to:
+    | '/'
+    | '/batches'
+    | '/api/recipes'
+    | '/recipes/new'
+    | '/api/recipes/$id'
+    | '/recipes/$id/delete'
+    | '/recipes/$id/edit'
+  id:
+    | '__root__'
+    | '/'
+    | '/batches'
+    | '/api/recipes'
+    | '/recipes/new'
+    | '/api/recipes/$id'
+    | '/recipes/$id/delete'
+    | '/recipes/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BatchesRoute: typeof BatchesRoute
-  RecipesRoute: typeof RecipesRoute
+  ApiRecipesRoute: typeof ApiRecipesRouteWithChildren
+  RecipesNewRoute: typeof RecipesNewRoute
+  RecipesIdDeleteRoute: typeof RecipesIdDeleteRoute
+  RecipesIdEditRoute: typeof RecipesIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/recipes': {
-      id: '/recipes'
-      path: '/recipes'
-      fullPath: '/recipes'
-      preLoaderRoute: typeof RecipesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/batches': {
       id: '/batches'
       path: '/batches'
@@ -82,13 +136,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recipes/new': {
+      id: '/recipes/new'
+      path: '/recipes/new'
+      fullPath: '/recipes/new'
+      preLoaderRoute: typeof RecipesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/recipes': {
+      id: '/api/recipes'
+      path: '/api/recipes'
+      fullPath: '/api/recipes'
+      preLoaderRoute: typeof ApiRecipesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes/$id/edit': {
+      id: '/recipes/$id/edit'
+      path: '/recipes/$id/edit'
+      fullPath: '/recipes/$id/edit'
+      preLoaderRoute: typeof RecipesIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes/$id/delete': {
+      id: '/recipes/$id/delete'
+      path: '/recipes/$id/delete'
+      fullPath: '/recipes/$id/delete'
+      preLoaderRoute: typeof RecipesIdDeleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/recipes/$id': {
+      id: '/api/recipes/$id'
+      path: '/$id'
+      fullPath: '/api/recipes/$id'
+      preLoaderRoute: typeof ApiRecipesIdRouteImport
+      parentRoute: typeof ApiRecipesRoute
+    }
   }
 }
+
+interface ApiRecipesRouteChildren {
+  ApiRecipesIdRoute: typeof ApiRecipesIdRoute
+}
+
+const ApiRecipesRouteChildren: ApiRecipesRouteChildren = {
+  ApiRecipesIdRoute: ApiRecipesIdRoute,
+}
+
+const ApiRecipesRouteWithChildren = ApiRecipesRoute._addFileChildren(
+  ApiRecipesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BatchesRoute: BatchesRoute,
-  RecipesRoute: RecipesRoute,
+  ApiRecipesRoute: ApiRecipesRouteWithChildren,
+  RecipesNewRoute: RecipesNewRoute,
+  RecipesIdDeleteRoute: RecipesIdDeleteRoute,
+  RecipesIdEditRoute: RecipesIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
