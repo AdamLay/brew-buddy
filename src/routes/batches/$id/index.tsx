@@ -5,14 +5,22 @@ import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-b
 import { prisma } from "@/lib/db";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Calendar, Pencil } from "lucide-react";
+import { Calendar, Pencil, ShoppingCart } from "lucide-react";
 
 const getBatch = createServerFn({ method: "GET" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     return prisma.batch.findUnique({
       where: { id: data.id },
-      include: { recipe: { select: { id: true, name: true, brewType: true } } },
+      include: {
+        recipe: { select: { id: true, name: true, brewType: true } },
+        ingredients: {
+          include: {
+            ingredient: { select: { name: true, defaultPrice: true } },
+            recipeIngredient: { select: { amount: true, unit: true } },
+          },
+        },
+      },
     });
   });
 
@@ -55,13 +63,6 @@ function BatchDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Link
-        to="/batches"
-        className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary"
-      >
-        Back to Batches
-      </Link>
-
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <h1 className="text-2xl font-bold text-base-content">{batch.recipe.name}</h1>
@@ -138,6 +139,61 @@ function BatchDetailPage() {
           </div>
         </div>
       </div>
+
+      {batch.ingredients && batch.ingredients.length > 0 && (
+        <div className="card bg-base-100 shadow-lg border border-base-300 mb-6">
+          <div className="card-body">
+            <h2 className="card-title">
+              <ShoppingCart className="w-5 h-5" />
+              Ingredients & Cost
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="table table-sm">
+                <thead>
+                  <tr className="border-base-300">
+                    <th className="w-1/3">Ingredient</th>
+                    <th className="w-24">Amount</th>
+                    <th className="w-32">Unit Price (£)</th>
+                    <th className="w-24 text-right">Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {batch.ingredients.map((bi: (typeof batch.ingredients)[number]) => {
+                    const unitPrice = bi.price ?? bi.ingredient.defaultPrice ?? 0;
+                    const cost = unitPrice * bi.recipeIngredient.amount;
+                    return (
+                      <tr key={bi.id} className="border-base-200">
+                        <td className="font-medium">{bi.ingredient.name}</td>
+                        <td className="text-sm text-base-content/70">
+                          {bi.recipeIngredient.amount} {bi.recipeIngredient.unit}
+                        </td>
+                        <td className="text-sm text-base-content/70">£{unitPrice.toFixed(2)}</td>
+                        <td className="text-right font-mono text-sm">£{cost.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="border-primary font-bold border-t-2">
+                    <td colSpan={3} className="text-right pr-4">
+                      Total Ingredient Cost:
+                    </td>
+                    <td className="text-lg">
+                      £
+                      {batch.ingredients
+                        .reduce((sum, bi) => {
+                          const unitPrice = bi.price ?? bi.ingredient.defaultPrice ?? 0;
+                          return sum + unitPrice * bi.recipeIngredient.amount;
+                        }, 0)
+                        .toFixed(2)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="card bg-base-100 shadow-lg border border-base-300 print:hidden">
         <div className="card-body">

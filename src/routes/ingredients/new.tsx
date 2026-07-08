@@ -1,7 +1,6 @@
 import { useCreateIngredient } from "#/lib/ingredients/use-ingredients";
 import { IngredientForm } from "@/components/ingredient/IngredientForm";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/ingredients/new")({
   component: NewIngredientPage,
@@ -15,13 +14,6 @@ function NewIngredientPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Link
-        to="/ingredients"
-        className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary"
-      >
-        <ArrowLeft className="w-4 h-4 mr-1" />
-        Back to Ingredients
-      </Link>
       <h1 className="text-3xl font-bold text-base-content mb-6">New Ingredient</h1>
       {mutation.isError && (
         <div className="alert alert-error mb-6" role="alert">
