@@ -29,22 +29,22 @@ function NewBatchPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Link to="/batches" className="btn btn-ghost btn-sm mb-4">
+      <Link to="/batches" className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-1" />
         Back to Batches
       </Link>
-      <h1 className="text-3xl font-bold mb-6">New Batch</h1>
+      <h1 className="text-3xl font-bold text-base-content mb-6">New Batch</h1>
       {mutation.isError && (
-        <div className="alert alert-error mb-6">
+        <div className="alert alert-error mb-6" role="alert">
           <span>{(mutation.error as Error).message}</span>
         </div>
       )}
       {mutation.isSuccess && (
-        <div className="alert alert-success mb-6">
+        <div className="alert alert-success mb-6" role="alert">
           <span>Batch created successfully!</span>
         </div>
       )}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-lg border border-base-300">
         <div className="card-body">
           <BatchForm
             recipes={loaderData.recipes}

@@ -33,22 +33,22 @@ function EditRecipePage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Link to="/recipes" className="btn btn-ghost btn-sm mb-4">
+      <Link to="/recipes" className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary">
         <ArrowLeft className="w-4 h-4 mr-1" />
         Back to Recipes
       </Link>
-      <h1 className="text-3xl font-bold mb-6">Edit Recipe</h1>
+      <h1 className="text-3xl font-bold text-base-content mb-6">Edit Recipe</h1>
       {mutation.isSuccess && (
-        <div className="alert alert-success mb-6">
+        <div className="alert alert-success mb-6" role="alert">
           <span>Recipe updated successfully!</span>
         </div>
       )}
       {mutation.isError && (
-        <div className="alert alert-error mb-6">
+        <div className="alert alert-error mb-6" role="alert">
           <span>{(mutation.error as Error).message}</span>
         </div>
       )}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100 shadow-lg border border-base-300">
         <div className="card-body">
           <RecipeForm
             recipe={loaderData.recipe}

@@ -190,15 +190,15 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
           />
         </FormField>
 
-        <div className="divider">Ingredients</div>
+        <div className="divider text-base-content/50">Ingredients</div>
 
         <div className="space-y-4">
           {formIngredients.map((ing, index) => (
-            <div key={index} className="card bg-base-200 p-4 space-y-3 relative">
+            <div key={index} className="card bg-base-200 p-4 space-y-3 relative border border-base-300">
               <button
                 type="button"
                 onClick={() => removeIngredient(index)}
-                className="btn btn-error btn-sm btn-square absolute top-2 right-2"
+                className="btn btn-ghost btn-sm text-error hover:bg-error/10 absolute top-2 right-2"
                 title="Remove ingredient"
               >
                 <X className="w-4 h-4" />
@@ -255,7 +255,7 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
             </div>
           ))}
 
-          <button type="button" onClick={addIngredient} className="btn btn-outline w-fit">
+          <button type="button" onClick={addIngredient} className="btn btn-outline w-fit btn-sm text-base-content/70 hover:text-base-content hover:border-base-content/40">
             <Plus className="w-4 h-4 mr-1" />
             Add Ingredient
           </button>
@@ -263,11 +263,11 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
 
         <div className="flex gap-3 justify-end">
           {recipe ? (
-            <a href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost">
+            <a href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost text-base-content/70 hover:text-base-content">
               Cancel
             </a>
           ) : (
-            <a href="/recipes" className="btn btn-ghost">
+            <a href="/recipes" className="btn btn-ghost text-base-content/70 hover:text-base-content">
               Cancel
             </a>
           )}

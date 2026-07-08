@@ -1,20 +1,81 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
-  themes:
-    light,
-    dark --default;
+  themes: apothecary --default;
+}
+
+:root {
+  /* Apothecary dark theme — deep warm darks with golden amber accents */
+  --color-base-100: oklch(18.2% 0.005 30.928);
+  --color-base-200: oklch(16.382% 0.004 30.928);
+  --color-base-300: oklch(14.493% 0.004 30.928);
+  --color-base-content: oklch(92.777% 0.022 31.833);
+  --color-base-conce: oklch(92.777% 0.022 31.833);
+
+  --color-primary: oklch(70.044% 0.168 43.12);
+  --color-primary-content: oklch(18.2% 0.005 30.928);
+
+  --color-secondary: oklch(68.625% 0.094 145.417);
+  --color-secondary-content: oklch(18.2% 0.005 30.928);
+
+  --color-accent: oklch(65.625% 0.152 32.625);
+  --color-accent-content: oklch(18.2% 0.005 30.928);
+
+  --color-neutral: oklch(44.072% 0.03 30.928);
+  --color-neutral-content: oklch(92.777% 0.022 31.833);
+
+  --color-info: oklch(65.625% 0.152 32.625);
+  --color-info-content: oklch(18.2% 0.005 30.928);
+
+  --color-success: oklch(58.625% 0.152 152.625);
+  --color-success-content: oklch(18.2% 0.005 30.928);
+
+  --color-warning: oklch(80.625% 0.152 65.625);
+  --color-warning-content: oklch(18.2% 0.005 30.928);
+
+  --color-error: oklch(52.625% 0.182 15.625);
+  --color-error-content: oklch(92.777% 0.022 31.833);
+
+  --radius-box-shadow: 0.5rem;
+  /* border radius */
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+
+  /* base sizes */
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  /* border size */
+  --border: 1px;
+
+  /* effects */
+  --depth: 1;
+  --noise: 0;
 }
 
 * {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#app {
-  min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+.navbar-brand,
+.brand-link {
+  font-family: "Limelight", cursive;
+  font-weight: 400;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Cormorant Garamond", serif;
 }

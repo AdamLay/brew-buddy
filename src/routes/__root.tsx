@@ -3,7 +3,8 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { Home } from "lucide-react";
+import { Beaker, Home } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Navbar } from "../components/Navbar";
 import appCss from "../styles.css?url";
 
@@ -34,13 +35,18 @@ export const Route = createRootRoute({
 
 function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-      <h1 className="text-6xl font-bold mb-4">404</h1>
-      <p className="text-xl text-gray-500 mb-6">Page not found</p>
-      <a href="/" className="btn btn-primary">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+      <div className="text-primary">
+        <Beaker className="w-20 h-20 mx-auto opacity-30" />
+      </div>
+      <div>
+        <h1 className="text-6xl font-bold text-base-content mb-2">404</h1>
+        <p className="text-xl text-base-content/60">This brew went missing</p>
+      </div>
+      <Link to="/" className="btn btn-primary">
         <Home className="w-4 h-4 mr-1" />
         Go Home
-      </a>
+      </Link>
     </div>
   );
 }
@@ -52,11 +58,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <html lang="en">
         <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+            rel="stylesheet"
+          />
           <HeadContent />
         </head>
         <body className="min-h-screen flex flex-col bg-base-200">
           <Navbar />
-          <main className="flex-1 container mx-auto p-6 max-w-7xl">{children}</main>
+          <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
           <TanStackDevtools
             config={{
               position: "bottom-right",
@@ -74,3 +86,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
+
+

@@ -13,9 +13,9 @@ export function FormField({ label, htmlFor, required = false, error, children }:
   return (
     <div className="form-control w-full">
       <label className="label" htmlFor={htmlFor}>
-        <span className="label-text font-medium">
+        <span className="label-text font-medium text-base-content">
           {label}
-          {required && <span className="text-accent ml-0.5">*</span>}
+          {required && <span className="text-error ml-0.5">*</span>}
         </span>
       </label>
       {children}

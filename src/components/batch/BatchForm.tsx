@@ -151,7 +151,7 @@ export function BatchForm({
         </FormField>
 
         <div className="divider pt-0">
-          <span className="text-sm text-base-content/60">Gravity Readings</span>
+          <span className="text-sm text-base-content/50">Gravity Readings</span>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
