@@ -1,14 +1,21 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { RecipeForm } from "@/components/recipe/RecipeForm";
 import { prisma } from "@/lib/db";
 import { useUpdateRecipe } from "@/lib/use-recipe-mutations";
-import { RecipeForm } from "@/components/recipe/RecipeForm";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+
+const getRecipe = createServerFn({ method: "GET" })
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return prisma.recipe.findUnique({
+      where: { id: data.id },
+    });
+  });
 
 export const Route = createFileRoute("/recipes/$id/edit")({
   component: EditRecipePage,
   loader: async ({ params }) => {
-    const recipe = await prisma.recipe.findUnique({
-      where: { id: params.id },
-    });
+    const recipe = await getRecipe({ data: { id: params.id } });
     if (!recipe) {
       throw new Error("NOT_FOUND");
     }

@@ -1,14 +1,21 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { IngredientForm } from "@/components/ingredient/IngredientForm";
 import { prisma } from "@/lib/db";
 import { useUpdateIngredient } from "@/lib/use-ingredient-mutations";
-import { IngredientForm } from "@/components/ingredient/IngredientForm";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+
+const getIngredient = createServerFn({ method: "GET" })
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return prisma.ingredient.findUnique({
+      where: { id: data.id },
+    });
+  });
 
 export const Route = createFileRoute("/ingredients/$id/edit")({
   component: EditIngredientPage,
   loader: async ({ params }) => {
-    const ingredient = await prisma.ingredient.findUnique({
-      where: { id: params.id },
-    });
+    const ingredient = await getIngredient({ data: { id: params.id } });
     if (!ingredient) {
       throw new Error("NOT_FOUND");
     }
@@ -17,7 +24,7 @@ export const Route = createFileRoute("/ingredients/$id/edit")({
 });
 
 function EditIngredientPage() {
-  // ponytail: loader data accessed via Route.useLoaderData for SSR; 
+  // ponytail: loader data accessed via Route.useLoaderData for SSR;
   // in a full Query migration, this would use useQuery instead
   const loaderData = Route.useLoaderData();
   const mutation = useUpdateIngredient(loaderData.ingredient.id);
