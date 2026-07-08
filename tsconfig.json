@@ -1,5 +1,5 @@
 {
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "astro.config.mjs"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
@@ -25,4 +25,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   }
+}
 }

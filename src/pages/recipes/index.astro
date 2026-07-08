@@ -1,0 +1,111 @@
+---
+// Recipes list page
+import { prisma } from "@/lib/db";
+import { Navbar } from "../../components/Navbar";
+
+const recipes = await prisma.recipe.findMany({
+  orderBy: { createdAt: "desc" },
+  include: {
+    _count: { select: { batches: true } },
+    ingredients: { include: { ingredient: true } },
+  },
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recipes - Brew Buddy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar pathname="/recipes" />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-base-content">Recipes</h1>
+        <a href="/recipes/new" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          New Recipe
+        </a>
+      </div>
+
+      {recipes.length === 0 ? (
+        <div class="text-center py-16 bg-base-100 rounded-xl border border-base-300">
+          <p class="text-base-content/60 text-lg mb-4">No recipes yet. Create your first recipe!</p>
+        </div>
+      ) : (
+        <div class="card bg-base-100 shadow-lg border border-base-300">
+          <div class="card-body p-0">
+            <div class="overflow-x-auto">
+              <table class="table w-full">
+                <thead class="bg-base-200">
+                  <tr>
+                    <th class="text-base-content font-semibold">Name</th>
+                    <th class="text-base-content font-semibold">Type</th>
+                    <th class="text-base-content font-semibold">Batches</th>
+                    <th class="text-base-content font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-base-200">
+                  {recipes.map((recipe: any) => (
+                    <tr key={recipe.id} class="hover">
+                      <td>
+                        <div>
+                          <div class="font-medium text-base-content">{recipe.name}</div>
+                          {recipe.description && (
+                            <div class={`text-sm text-base-content/60 ${recipe.description.length > 80 ? "truncate max-w-xs" : ""}`}>
+                              {recipe.description}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge badge-accent">
+                          {recipe.brewType.charAt(0).toUpperCase() + recipe.brewType.slice(1).toLowerCase()}
+                        </span>
+                      </td>
+                      <td class="text-base-content">{recipe._count.batches}</td>
+                      <td class="text-right">
+                        <div class="flex gap-2 justify-end">
+                          <a href={`/recipes/${recipe.id}/edit`} class="btn btn-sm btn-ghost text-base-content/70 hover:text-primary hover:bg-base-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-3.438a4.5 4.5 0 0 1 1.13-1.897Z" />
+                            </svg>
+                          </a>
+                          <form
+                            onSubmit={(e: any) => {
+                              e.preventDefault();
+                              if (confirm("Are you sure?")) {
+                                fetch(`/api/recipes/${recipe.id}`, { method: "DELETE" }).then(() => window.location.reload());
+                              }
+                            }}
+                            class="inline"
+                          >
+                            <button type="submit" class="btn btn-sm btn-ghost text-error hover:bg-error/10">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165-1.888-11.068a1.848 1.848 0 0 0-1.834-1.598H7.876a1.848 1.848 0 0 0-1.834 1.598L3.988 15.941m12.022 0H3.988m16.055 0-2.392-9.758A1.848 1.848 0 0 0 16.172 5H7.812a1.848 1.848 0 0 0-1.874 1.183L3.988 15.941" />
+                              </svg>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+---
+// Home page
+import { Beaker, BookOpen, Sprout } from "lucide-react";
+import { Navbar } from "../components/Navbar";
+
+const features = [
+  {
+    icon: BookOpen,
+    title: "Plan Recipes",
+    desc: "Define your ingredients and instructions for every cider, mead, or brew you'll ever make.",
+    href: "/recipes",
+  },
+  {
+    icon: Beaker,
+    title: "Track Batches",
+    desc: "Record gravity readings, status, and tasting notes from planning to the final pour.",
+    href: "/batches",
+  },
+  {
+    icon: Sprout,
+    title: "Manage Ingredients",
+    desc: "Keep a master list of your fruits, sugars, yeasts, and spices. Always know what's in stock.",
+    href: "/ingredients",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Brew Buddy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar pathname="/" />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <div class="space-y-12">
+        <div class="text-center space-y-4 py-8">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Beaker class="w-8 h-8 text-primary" />
+            </div>
+          </div>
+          <h1 class="text-5xl font-bold text-base-content leading-tight">Brew Buddy</h1>
+          <h2 class="text-2xl text-base-content/60 max-w-2xl mx-auto">
+            Plan recipes. Track batches. Perfect your brew.
+          </h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          {features.map((f) => {
+            const Icon = f.icon;
+            return (
+              <a
+                key={f.title}
+                href={f.href}
+                class="card bg-base-100 shadow-lg hover:shadow-xl transition-all border border-base-300 hover:border-primary/40"
+              >
+                <div class="card-body">
+                  <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Icon class="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 class="card-title text-lg text-base-content">{f.title}</h3>
+                  </div>
+                  <p class="text-base-content/70 leading-relaxed">{f.desc}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

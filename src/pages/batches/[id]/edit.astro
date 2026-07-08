@@ -1,0 +1,217 @@
+---
+// Edit batch page
+import { prisma } from "@/lib/db";
+import { Navbar } from "../../components/Navbar";
+
+const id = Astro.url.pathname.split("/batches/")[1].split("/edit")[0];
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const [batch, recipes] = await Promise.all([
+  prisma.batch.findUnique({
+    where: { id },
+    include: {
+      recipe: { select: { id: true, name: true } },
+      ingredients: {
+        include: {
+          ingredient: { select: { id: true, name: true, defaultPrice: true } },
+          recipeIngredient: { select: { amount: true, unit: true } },
+        },
+      },
+    },
+  }),
+  prisma.recipe.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  }),
+]);
+
+if (!batch) {
+  return Astro.redirect("/404");
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit Batch - {batch.recipe.name} - Brew Buddy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar pathname={`/batches/${id}/edit`} />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold text-base-content mb-6">Edit Batch</h1>
+        <div class="card bg-base-100 shadow-lg border border-base-300">
+          <div class="card-body">
+            <form id="batch-form" onsubmit="handleBatchSubmit(event)">
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4">
+                  <div>
+                    <label class="label label-text font-medium required-column">Recipe</label>
+                    <select name="recipeId" class="select select-bordered w-full">
+                      <option value="">Select a recipe...</option>
+                      {recipes.map((r) => (
+                        <option key={r.id} value={r.id} selected={r.id === batch.recipeId}>
+                          {r.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="label label-text font-medium">Status</label>
+                    <select name="status" class="select select-bordered w-full">
+                      {["PLANNING", "FERMENTING", "CONDITIONING", "BOTTLED", "COMPLETE"].map((s) => (
+                        <option key={s} value={s} selected={s === batch.status}>
+                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="label label-text">Start Date</label>
+                      <input type="date" name="startDate" class="input input-bordered w-full"
+                        value={batch.startDate ? new Date(batch.startDate).toISOString().split("T")[0] : ""} />
+                    </div>
+                    <div>
+                      <label class="label label-text">End Date</label>
+                      <input type="date" name="endDate" class="input input-bordered w-full"
+                        value={batch.endDate ? new Date(batch.endDate).toISOString().split("T")[0] : ""} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="label label-text">Batch Size (liters)</label>
+                    <input type="number" name="batchSize" step="0.1" min="0.1" placeholder="e.g. 5" class="input input-bordered w-full"
+                      value={batch.batchSize ?? ""} />
+                  </div>
+
+                  <div class="divider pt-0">
+                    <span class="text-sm text-base-content/50">Gravity Readings</span>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-4">
+                    <div>
+                      <label class="label label-text">OG</label>
+                      <input type="number" name="ogReading" step="0.001" placeholder="1.050" class="input input-bordered w-full"
+                        value={batch.ogReading ?? ""} />
+                    </div>
+                    <div>
+                      <label class="label label-text">FG</label>
+                      <input type="number" name="fgReading" step="0.001" placeholder="1.010" class="input input-bordered w-full"
+                        value={batch.fgReading ?? ""} />
+                    </div>
+                    <div>
+                      <label class="label label-text">Current</label>
+                      <input type="number" name="currentGravity" step="0.001" placeholder="— " class="input input-bordered w-full"
+                        value={batch.currentGravity ?? ""} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="label label-text">Notes</label>
+                    <textarea name="notes" class="textarea textarea-bordered w-full h-24">{batch.notes ?? ""}</textarea>
+                  </div>
+                </div>
+
+                {batch.ingredients && batch.ingredients.length > 0 && (
+                  <>
+                    <div class="divider pt-0">
+                      <span class="text-sm text-base-content/50">Ingredient Costs</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                      <table class="table table-sm">
+                        <thead>
+                          <tr class="border-base-300">
+                            <th class="w-1/3">Ingredient</th>
+                            <th class="w-24">Amount</th>
+                            <th class="w-32">Unit Price (&pound;)</th>
+                            <th class="w-24">Cost</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {batch.ingredients.map((bi: any) => {
+                            const unitPrice = bi.price ?? bi.ingredient.defaultPrice ?? 0;
+                            const cost = unitPrice * bi.recipeIngredient.amount;
+                            return (
+                              <tr key={bi.id} class="bg-base-100">
+                                <td class="font-medium">{bi.ingredient.name}</td>
+                                <td class="text-sm text-base-content/70">{bi.recipeIngredient.amount} {bi.recipeIngredient.unit}</td>
+                                <td class="text-sm text-base-content/70">&pound;{unitPrice.toFixed(2)}</td>
+                                <td class="font-mono text-sm">&pound;{cost.toFixed(2)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+
+                <button type="submit" id="submit-btn" class="btn btn-primary mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                  Update Batch
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script client:load is:html>
+  async function handleBatchSubmit(e: Event) {
+    e.preventDefault();
+    const form = (e as any).currentTarget as HTMLFormElement;
+    const btn = document.getElementById("submit-btn") as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    const formData = new FormData(form);
+    const data: Record<string, unknown> = {
+      recipeId: formData.get("recipeId") as string,
+      status: formData.get("status") as string,
+      notes: (formData.get("notes") as string) || null,
+      startDate: formData.get("startDate") as string ? new Date(formData.get("startDate") as string) : null,
+      endDate: formData.get("endDate") as string ? new Date(formData.get("endDate") as string) : null,
+      batchSize: formData.get("batchSize") ? parseFloat(formData.get("batchSize") as string) : null,
+      ogReading: formData.get("ogReading") ? parseFloat(formData.get("ogReading") as string) : null,
+      fgReading: formData.get("fgReading") ? parseFloat(formData.get("fgReading") as string) : null,
+      currentGravity: formData.get("currentGravity") ? parseFloat(formData.get("currentGravity") as string) : null,
+    };
+
+    try {
+      const res = await fetch("/api/batches/{id}", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        window.location.href = `/batches/${id}`;
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Failed to update batch");
+      }
+    } catch (err) {
+      alert(String(err));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Update Batch";
+    }
+  }
+</script>

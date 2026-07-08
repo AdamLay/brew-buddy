@@ -1,21 +1,47 @@
-import { prisma } from "@/lib/db";
 import { recipeKeys } from "@/lib/query-keys";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
-import { recipeSchema, type RecipeData } from "./recipe-validation";
 
-const fetchRecipesFn = createServerFn({ method: "GET" }).handler(async () => {
-  const recipes = await prisma.recipe.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: { select: { batches: true } },
-      ingredients: { include: { ingredient: true } },
-    },
+async function fetchRecipes() {
+  const res = await fetch("/api/recipes");
+  if (!res.ok) throw new Error("Failed to fetch recipes");
+  return res.json();
+}
+
+async function createRecipe(data: Record<string, unknown>) {
+  const res = await fetch("/api/recipes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
   });
-  return recipes;
-});
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to create recipe");
+  }
+  return res.json();
+}
+
+async function updateRecipe(id: string, data: Record<string, unknown>) {
+  const res = await fetch(`/api/recipes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to update recipe");
+  }
+  return res.json();
+}
+
+async function deleteRecipe(id: string) {
+  const res = await fetch(`/api/recipes/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to delete recipe");
+  }
+  return res.json();
+}
 
 export type RecipeWithCount = any & {
   _count: { batches: number };
@@ -34,32 +60,14 @@ export type RecipeWithCount = any & {
 export function useRecipes(): UseQueryResult<RecipeWithCount[], unknown> {
   return useQuery({
     queryKey: recipeKeys.lists(),
-    queryFn: async () => await fetchRecipesFn(),
+    queryFn: fetchRecipes,
   });
 }
-
-export const createRecipeFn = createServerFn({ method: "POST" })
-  .validator(recipeSchema)
-  .handler(async ({ data }) => {
-    const { ingredients, ...recipeData } = data;
-    return await prisma.$transaction(async (tx) => {
-      const recipe = await tx.recipe.create({ data: recipeData });
-      if (ingredients?.length) {
-        await tx.recipeIngredient.createMany({
-          data: ingredients.map((ing) => ({ ...ing, recipeId: recipe.id })),
-        });
-      }
-      return tx.recipe.findUnique({
-        where: { id: recipe.id },
-        include: { ingredients: { include: { ingredient: true } } },
-      });
-    });
-  });
 
 export function useCreateRecipe(onSuccess?: () => void) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: RecipeData) => createRecipeFn({ data }),
+    mutationFn: createRecipe,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
       onSuccess?.();
@@ -67,33 +75,10 @@ export function useCreateRecipe(onSuccess?: () => void) {
   });
 }
 
-const updateRecipeValidator = z.object({ id: z.string(), data: recipeSchema });
-
-export const updateRecipeFn = createServerFn({ method: "POST" })
-  .validator(updateRecipeValidator)
-  .handler(async ({ data }) => {
-    const existing = await prisma.recipe.findUnique({ where: { id: data.id } });
-    if (!existing) throw new Error("NOT_FOUND");
-    const { ingredients, ...recipeData } = data.data;
-    return await prisma.$transaction(async (tx) => {
-      await tx.recipeIngredient.deleteMany({ where: { recipeId: data.id } });
-      if (ingredients?.length) {
-        await tx.recipeIngredient.createMany({
-          data: ingredients.map((ing) => ({ ...ing, recipeId: data.id })),
-        });
-      }
-      return tx.recipe.update({
-        where: { id: data.id },
-        data: recipeData,
-        include: { ingredients: { include: { ingredient: true } } },
-      });
-    });
-  });
-
 export function useUpdateRecipe(id: string, onSuccess?: () => void) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: RecipeData) => updateRecipeFn({ data: { id, data } }),
+    mutationFn: (data: Record<string, unknown>) => updateRecipe(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: recipeKeys.detail(id) });
@@ -102,24 +87,16 @@ export function useUpdateRecipe(id: string, onSuccess?: () => void) {
   });
 }
 
-export const deleteRecipeFn = createServerFn({ method: "POST" })
-  .validator(z.string())
-  .handler(async ({ data }) => {
-    try {
-      return await prisma.recipe.delete({ where: { id: data } });
-    } catch (err) {
-      if ((err as any).code === "P2025") throw new Error("NOT_FOUND");
-      throw err;
-    }
-  });
-
 export function useDeleteRecipe(onSuccess?: () => void) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deleteRecipeFn({ data: id }),
+    mutationFn: deleteRecipe,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
       onSuccess?.();
     },
   });
 }
+
+// Also export the delete function for direct use
+export { deleteRecipe as deleteRecipeFn };

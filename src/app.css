@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@import "daisyui/brands";
+
+@custom-variant dark {
+  .apothecary & {
+    --color-base-100: oklch(0.3504 0.0183 258.149);
+    --color-base-200: oklch(0.3309 0.0168 258.117);
+    --color-base-300: oklch(0.2515 0.0134 259.122);
+    --color-base-content: oklch(91.63% 0 0);
+    --color-primary: oklch(0.5889 0.2548 363.43);
+    --color-secondary: oklch(0.7462 0.1866 58.398);
+    --color-accent: oklch(0.659 0.209 336.35);
+    --color-neutral: oklch(0.4094 0.017 258.397);
+    --color-stretch: start;
+    border-radius: var(--radius-box, 1rem);
+  }
+}
+
+:root {
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Print styles */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

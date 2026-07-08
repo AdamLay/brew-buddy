@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 
 export function ListShell({
@@ -22,10 +21,10 @@ export function ListShell({
         <h1 className="text-3xl font-bold text-base-content">{title}</h1>
         <div className="flex gap-2 items-center">
           {actions}
-          <Link to={addHref as any} className="btn btn-primary">
+          <a href={addHref} className="btn btn-primary">
             <Plus className="w-4 h-4 mr-1" />
             {addButtonText}
-          </Link>
+          </a>
         </div>
       </div>
 

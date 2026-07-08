@@ -1,6 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useBatches } from "@/lib/batches/use-batches";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -19,7 +17,6 @@ function isDateInBatch(day: Date, batch: { startDate: string; endDate: string | 
 }
 
 function getMonthGrid(year: number, month: number) {
-  // month is 0-indexed
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const startPadding = firstDay.getDay();
@@ -107,13 +104,12 @@ function DayCell({
                   +{batches.length - maxShow} more
                 </button>
               ) : (
-                <Link
-                  to="/batches/$id"
-                  params={{ id: batch.id }}
+                <a
+                  href={`/batches/${batch.id}`}
                   className={`block text-[10px] truncate rounded px-1 py-px border ${brewTypeColors[batch.recipe.brewType] || "badge-ghost"} bg-opacity-10 hover:opacity-80`}
                 >
                   <span className="font-medium">{batch.recipe.name}</span>
-                </Link>
+                </a>
               )}
             </div>
           );
@@ -174,6 +170,8 @@ function MonthNav({
 
 // ── Main Calendar ──────────────────────────────────────────────────────
 
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+
 export function BatchCalendar() {
   const { data: batches, isLoading } = useBatches();
   const today = new Date();
@@ -216,7 +214,7 @@ export function BatchCalendar() {
 
         {grid.map(({ date, inMonth }: { date: Date; inMonth: boolean }) => {
           const dateStr = date.toISOString().split("T")[0];
-          const dayBatches = batches?.filter((b) =>
+          const dayBatches = batches?.filter((b: any) =>
             isDateInBatch(date, b)
           ) ?? [];
 

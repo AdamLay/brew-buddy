@@ -1,6 +1,5 @@
 import type { IngredientWithCount } from "#/lib/ingredients/use-ingredients";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 
 function formatType(type: string | null) {
@@ -65,12 +64,12 @@ export function IngredientTable({
                   <td className="text-base-content">{ingredient._count.recipes}</td>
                   <td className="text-right">
                     <div className="flex gap-2 justify-end">
-                      <Link
-                        to={onEdit(ingredient.id)}
+                      <a
+                        href={onEdit(ingredient.id)}
                         className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary hover:bg-base-200"
                       >
                         <Pencil className="w-4 h-4" />
-                      </Link>
+                      </a>
                       <DeleteButton onDelete={onDelete(ingredient.id)} />
                     </div>
                   </td>
@@ -108,12 +107,12 @@ export function IngredientCards({
                 {ingredient.name}
               </div>
               <div className="flex gap-1 shrink-0">
-                <Link
-                  to={onEdit(ingredient.id)}
+                <a
+                  href={onEdit(ingredient.id)}
                   className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary"
                 >
                   <Pencil className="w-4 h-4" />
-                </Link>
+                </a>
                 <DeleteButton onDelete={onDelete(ingredient.id)} />
               </div>
             </div>

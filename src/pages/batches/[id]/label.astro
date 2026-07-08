@@ -1,0 +1,65 @@
+---
+// Batch label print page
+import { prisma } from "@/lib/db";
+import { QRCodeSVG } from "qrcode.react";
+
+const id = Astro.url.pathname.split("/batches/")[1].split("/label")[0];
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const batch = await prisma.batch.findUnique({
+  where: { id },
+  include: { recipe: { select: { id: true, name: true, brewType: true } } },
+});
+
+if (!batch) {
+  return Astro.redirect("/404");
+}
+
+const baseUrl = (import.meta as any).env?.VITE_BASE_URL || "http://localhost:3000";
+const batchUrl = `${baseUrl}/batches/${id}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Label - {batch.recipe.name} - Brew Buddy</title>
+    <style>
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body style="background-color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <div style="border: 2px solid #000; border-radius: 8px; padding: 16px; max-width: 480px; display: flex; gap: 24px; align-items: flex-start;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div id="qrcode"></div>
+        <span style="font-size: 10px; color: #00000080;">{batchUrl}</span>
+      </div>
+      <div style="flex: 1; min-width: 0;">
+        <h3 style="font-weight: bold; font-size: 18px; line-height: 1.2; margin: 0;">{batch.recipe.name}</h3>
+        <p style="font-size: 14px; color: #00000099; margin: 4px 0 8px 0;">{batch.recipe.brewType}</p>
+        <div style="font-size: 14px; line-height: 1.5;">
+          <p><span style="font-weight: 500; color: #00000099;">Start:</span> {batch.startDate ? new Date(batch.startDate).toLocaleDateString() : "\u2014"}</p>
+        </div>
+        {batch.notes && <p style="font-size: 14px; margin-top: 8px; line-height: 1.4;">{batch.notes}</p>}
+      </div>
+    </div>
+  </body>
+</html>
+
+<script client:load is:raw>
+  // Client-side QR code generation using qrcode.react
+  import { createRoot } from "react-dom/client";
+  import { QRCodeSVG } from "qrcode/react";
+
+  const container = document.getElementById("qrcode") as HTMLElement;
+  const root = createRoot(container);
+  root.render(<QRCodeSVG value="{batchUrl}" size={140} bgColor="#ffffff" fgColor="#000000" />);
+</script>

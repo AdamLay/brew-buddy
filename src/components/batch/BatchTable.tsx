@@ -1,6 +1,5 @@
 import { Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { Link } from "@tanstack/react-router";
 import type { BatchWithRecipe } from "@/lib/batches/use-batches";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -79,12 +78,12 @@ export function BatchTable({
                   <td className="text-base-content">{nullable(batch.fgReading)}</td>
                   <td className="text-right">
                     <div className="flex gap-2 justify-end">
-                      <Link
-                        to={onEdit(batch.id)}
+                      <a
+                        href={onEdit(batch.id)}
                         className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary hover:bg-base-200"
                       >
                         <Pencil className="w-4 h-4" />
-                      </Link>
+                      </a>
                       <DeleteButton onDelete={onDelete(batch.id)} />
                     </div>
                   </td>
@@ -123,12 +122,12 @@ export function BatchCards({
             <div className="flex items-start justify-between gap-2">
               <div className="font-semibold text-base-content truncate">{batch.recipe.name}</div>
               <div className="flex gap-1 shrink-0">
-                <Link
-                  to={onEdit(batch.id)}
+                <a
+                  href={onEdit(batch.id)}
                   className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary"
                 >
                   <Pencil className="w-4 h-4" />
-                </Link>
+                </a>
                 <DeleteButton onDelete={onDelete(batch.id)} />
               </div>
             </div>

@@ -1,0 +1,27 @@
+---
+// Root layout for all Astro pages - uses Astro's slot system
+import "../app.css";
+import Navbar from "../components/Navbar";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <slot name="head" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <slot name="styles" />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <slot />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,257 @@
+---
+// New batch page
+import { prisma } from "@/lib/db";
+import { Navbar } from "../components/Navbar";
+
+const recipes = await prisma.recipe.findMany({
+  select: { id: true, name: true },
+  orderBy: { name: "asc" },
+});
+
+const searchParams = new URL(Astro.request.url).searchParams;
+const preselectedRecipeId = searchParams.get("recipeId") || undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New Batch - Brew Buddy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar pathname="/batches/new" />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold text-base-content mb-6">New Batch</h1>
+        <div class="card bg-base-100 shadow-lg border border-base-300">
+          <div class="card-body">
+            <BatchForm
+              recipes={recipes}
+              preselectedRecipeId={preselectedRecipeId}
+            />
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script client:load is:html>
+  interface FormValues {
+    recipeId: string;
+    startDate?: string;
+    endDate?: string;
+    status: string;
+    notes?: string;
+    batchSize?: number;
+    ogReading?: number;
+    fgReading?: number;
+    currentGravity?: number;
+    ingredients?: Array<{ recipeIngredientId: string; priceOverride?: number | null }>;
+  }
+
+  interface IngredientPrice {
+    id: string;
+    name: string;
+    amount: number;
+    unit: string;
+    defaultPrice: number | null;
+    priceOverride: number | null;
+    rawValue: string;
+    recipeIngredientId: string;
+  }
+
+  interface BatchFormProps {
+    recipes: { id: string; name: string }[];
+    preselectedRecipeId?: string;
+  }
+
+  function BatchForm({ recipes, preselectedRecipeId }: BatchFormProps) {
+    const [ingredients, setIngredients] = React.useState<IngredientPrice[]>([]);
+    const [focusedRecipeId, setFocusedRecipeId] = React.useState<string | null>(null);
+    const [recipeIngredients, setRecipeIngredients] = React.useState<any[]>([]);
+    const [statusMsg, setStatusMsg] = React.useState<{ type: string; text: string } | null>(null);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (isSubmitting) return;
+      setIsSubmitting(true);
+
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const data: FormValues = {
+        recipeId: formData.get("recipeId") as string,
+        startDate: formData.get("startDate") as string || undefined,
+        endDate: formData.get("endDate") as string || undefined,
+        status: (formData.get("status") as string) || "PLANNING",
+        notes: formData.get("notes") as string || undefined,
+        batchSize: formData.get("batchSize") ? parseFloat(formData.get("batchSize") as string) : undefined,
+        ogReading: formData.get("ogReading") ? parseFloat(formData.get("ogReading") as string) : undefined,
+        fgReading: formData.get("fgReading") ? parseFloat(formData.get("fgReading") as string) : undefined,
+        currentGravity: formData.get("currentGravity") ? parseFloat(formData.get("currentGravity") as string) : undefined,
+        ingredients: ingredients.map((ing) => ({
+          recipeIngredientId: ing.recipeIngredientId,
+          priceOverride: ing.priceOverride,
+        })),
+      };
+
+      try {
+        const res = await fetch("/api/batches", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) {
+          window.location.href = "/batches";
+        } else {
+          const err = await res.json().catch(() => ({}));
+          setStatusMsg({ type: "error", text: err.error || "Failed to create batch" });
+        }
+      } catch (err) {
+        setStatusMsg({ type: "error", text: String(err) });
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    const handleRecipeChange = async (recipeId: string) => {
+      try {
+        const res = await fetch(`/api/recipes/${recipeId}/ingredients`);
+        const ings = await res.json();
+        setRecipeIngredients(ings);
+      } catch (e) {
+        setRecipeIngredients([]);
+      }
+    };
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label class="label label-text font-medium required-column">Recipe</label>
+              <select name="recipeId" required class="select select-bordered w-full">
+                <option value="">Select a recipe...</option>
+                {recipes.map((r) => (
+                  <option key={r.id} value={r.id} selected={r.id === preselectedRecipeId}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label class="label label-text font-medium">Status</label>
+              <select name="status" class="select select-bordered w-full">
+                {["PLANNING", "FERMENTING", "CONDITIONING", "BOTTLED", "COMPLETE"].map((s) => (
+                  <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="label label-text">Start Date</label>
+                <input type="date" name="startDate" class="input input-bordered w-full" />
+              </div>
+              <div>
+                <label class="label label-text">End Date</label>
+                <input type="date" name="endDate" class="input input-bordered w-full" />
+              </div>
+            </div>
+
+            <div>
+              <label class="label label-text">Batch Size (liters)</label>
+              <input type="number" name="batchSize" step="0.1" min="0.1" placeholder="e.g. 5" class="input input-bordered w-full" />
+            </div>
+
+            <div class="divider pt-0">
+              <span class="text-sm text-base-content/50">Gravity Readings</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label class="label label-text">OG</label>
+                <input type="number" name="ogReading" step="0.001" placeholder="1.050" class="input input-bordered w-full" />
+              </div>
+              <div>
+                <label class="label label-text">FG</label>
+                <input type="number" name="fgReading" step="0.001" placeholder="1.010" class="input input-bordered w-full" />
+              </div>
+              <div>
+                <label class="label label-text">Current</label>
+                <input type="number" name="currentGravity" step="0.001" placeholder="— " class="input input-bordered w-full" />
+              </div>
+            </div>
+
+            <div>
+              <label class="label label-text">Notes</label>
+              <textarea name="notes" class="textarea textarea-bordered w-full h-24" placeholder="Optional notes about this batch..."></textarea>
+            </div>
+          </div>
+
+          {recipeIngredients.length > 0 && (
+            <>
+              <div class="divider pt-0">
+                <span class="text-sm text-base-content/50">Ingredient Costs</span>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="table table-sm">
+                  <thead>
+                    <tr class="border-base-300">
+                      <th class="w-1/3">Ingredient</th>
+                      <th class="w-24">Amount</th>
+                      <th class="w-32">Unit Price (&pound;)</th>
+                      <th class="w-24">Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recipeIngredients.map((ri: any) => {
+                      const defaultPrice = ri.ingredient.defaultPrice;
+                      return (
+                        <tr key={ri.id} class="bg-base-100">
+                          <td class="font-medium">{ri.ingredient.name}</td>
+                          <td>
+                            <div class="text-sm">{ri.amount} {ri.unit}</div>
+                          </td>
+                          <td>
+                            <div class="flex gap-1">
+                              <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                placeholder={defaultPrice != null ? `£${defaultPrice.toFixed(2)}` : "—"}
+                                class="input input-bordered input-xs flex-1 min-w-0"
+                                defaultValue={defaultPrice != null ? defaultPrice.toFixed(2) : ""}
+                              />
+                            </div>
+                          </td>
+                          <td class="font-mono text-sm">&pound;{defaultPrice ? (defaultPrice * ri.amount).toFixed(2) : "—"}
+                        </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          <button type="submit" class="btn btn-primary mt-4" disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create Batch"}
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  export {};
+</script>

@@ -1,7 +1,6 @@
-import { Pencil } from "lucide-react";
-import { DeleteButton } from "@/components/ui/DeleteButton";
-import { Link } from "@tanstack/react-router";
 import type { RecipeWithCount } from "#/lib/recipes/use-recipes";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { Pencil } from "lucide-react";
 
 export function RecipeTable({
   recipes,
@@ -49,12 +48,12 @@ export function RecipeTable({
                   <td className="text-base-content">{recipe._count.batches}</td>
                   <td className="text-right">
                     <div className="flex gap-2 justify-end">
-                      <Link
-                        to={onEdit(recipe.id) as any}
+                      <a
+                        href={onEdit(recipe.id)}
                         className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary hover:bg-base-200"
                       >
                         <Pencil className="w-4 h-4" />
-                      </Link>
+                      </a>
                       <DeleteButton onDelete={onDelete(recipe.id)} />
                     </div>
                   </td>
@@ -88,12 +87,12 @@ export function RecipeCards({
             <div className="flex items-start justify-between gap-2">
               <div className="font-semibold text-base-content text-lg truncate">{recipe.name}</div>
               <div className="flex gap-1 shrink-0">
-                <Link
-                  to={onEdit(recipe.id) as any}
+                <a
+                  href={onEdit(recipe.id)}
                   className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary"
                 >
                   <Pencil className="w-4 h-4" />
-                </Link>
+                </a>
                 <DeleteButton onDelete={onDelete(recipe.id)} />
               </div>
             </div>

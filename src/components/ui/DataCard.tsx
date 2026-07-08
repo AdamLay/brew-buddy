@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 
 export function DataCard({
@@ -22,12 +21,12 @@ export function DataCard({
         {(editHref || actions) && (
           <div className="flex gap-2 justify-end mt-2 pt-2 border-t border-base-200">
             {editHref && (
-              <Link
-                to={editHref as any}
+              <a
+                href={editHref}
                 className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary"
               >
                 <Pencil className="w-4 h-4" />
-              </Link>
+              </a>
             )}
             {actions}
           </div>

@@ -1,0 +1,129 @@
+---
+// Batches listing page
+import { prisma } from "@/lib/db";
+import { Navbar } from "../components/Navbar";
+import type { BatchWithRecipe } from "@/lib/batches/use-batches";
+
+const batches: BatchWithRecipe[] = await prisma.batch.findMany({
+  orderBy: { createdAt: "desc" },
+  include: {
+    recipe: { select: { name: true, brewType: true } },
+    ingredients: {
+      include: {
+        ingredient: { select: { name: true } },
+        recipeIngredient: { select: { amount: true, unit: true } },
+      },
+    },
+  },
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Batche</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar pathname="/batches" />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-base-content">Batches</h1>
+        <div class="flex gap-2 items-center">
+          <a href="/batches/new" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New Batch
+          </a>
+        </div>
+      </div>
+
+      {batches.length === 0 ? (
+        <div class="text-center py-16 bg-base-100 rounded-xl border border-base-300">
+          <p class="text-base-content/60 text-lg mb-4">No batches yet. Create your first batch!</p>
+          <a href="/batches/new" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Create Batch
+          </a>
+        </div>
+      ) : (
+        <div class="card bg-base-100 shadow-lg border border-base-300">
+          <div class="card-body p-0">
+            <div class="overflow-x-auto">
+              <table class="table w-full">
+                <thead class="bg-base-200">
+                  <tr>
+                    <th class="text-base-content font-semibold">Recipe</th>
+                    <th class="text-base-content font-semibold">Status</th>
+                    <th class="text-base-content font-semibold">Size (L)</th>
+                    <th class="text-base-content font-semibold">Start</th>
+                    <th class="text-base-content font-semibold">OG</th>
+                    <th class="text-base-content font-semibold">FG</th>
+                    <th class="text-base-content font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-base-200">
+                  {batches.map((batch) => (
+                    <tr key={batch.id} class="hover cursor-pointer">
+                      <td>
+                        <div class="font-medium text-base-content">{batch.recipe.name}</div>
+                        {batch.recipe.brewType && (
+                          <div class="text-xs text-base-content/50">
+                            {batch.recipe.brewType.toLowerCase()}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <span class="badge badge-ghost">
+                          {batch.status.charAt(0).toUpperCase() + batch.status.slice(1)}
+                        </span>
+                      </td>
+                      <td class="text-base-content">{batch.batchSize ?? "—"}</td>
+                      <td class="text-base-content">{batch.startDate ? new Date(batch.startDate).toLocaleDateString() : "—"}</td>
+                      <td class="text-base-content">{batch.ogReading ?? "—"}</td>
+                      <td class="text-base-content">{batch.fgReading ?? "—"}</td>
+                      <td class="text-right">
+                        <div class="flex gap-2 justify-end">
+                          <a href={`/batches/${batch.id}/edit`} class="btn btn-sm btn-ghost text-base-content/70 hover:text-primary hover:bg-base-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-3.438a4.5 4.5 0 0 1 1.13-1.897Z" />
+                            </svg>
+                          </a>
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              if (confirm("Are you sure?")) {
+                                fetch(`/api/batches/${batch.id}`, { method: "DELETE" }).then(() => window.location.reload());
+                              }
+                            }}
+                            class="inline"
+                          >
+                            <button type="submit" class="btn btn-sm btn-ghost text-error hover:bg-error/10">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165-1.888-11.068a1.848 1.848 0 0 0-1.834-1.598H7.876a1.848 1.848 0 0 0-1.834 1.598L3.988 15.941m12.022 0H3.988m16.055 0-2.392-9.758A1.848 1.848 0 0 0 16.172 5H7.812a1.848 1.848 0 0 0-1.874 1.183L3.988 15.941" />
+                              </svg>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  </body>
+</html>

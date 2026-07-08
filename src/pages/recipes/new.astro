@@ -1,0 +1,182 @@
+---
+// New recipe page
+import { Navbar } from "../../components/Navbar";
+
+const ingredients = await (await fetch("/api/ingredients")).json();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New Recipe - Brew Buddy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Limelight&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+    <Navbar pathname="/recipes/new" />
+    <main class="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold text-base-content mb-6">New Recipe</h1>
+        <div class="card bg-base-100 shadow-lg border border-base-300">
+          <div class="card-body">
+            <form id="recipe-form" onsubmit="handleRecipeSubmit(event)">
+              <div class="space-y-6">
+                <div>
+                  <label class="label label-text font-medium required-column">Name</label>
+                  <input type="text" name="name" placeholder="e.g., Classic Apple Cider" required class="input input-bordered w-full" />
+                </div>
+
+                <div>
+                  <label class="label label-text">Description</label>
+                  <textarea name="description" placeholder="Brief description of this recipe..." rows={3} class="textarea textarea-bordered w-full"></textarea>
+                </div>
+
+                <div>
+                  <label class="label label-text font-medium required-column">Brew Type</label>
+                  <select name="brewType" required class="select select-bordered w-full">
+                    <option value="" disabled selected>Select brew type...</option>
+                    <option value="CIDER">Cider</option>
+                    <option value="WINE">Wine</option>
+                    <option value="BEER">Beer</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="label label-text">Instructions</label>
+                  <textarea name="instructions" placeholder="Step-by-step brewing instructions..." rows={5} class="textarea textarea-bordered w-full"></textarea>
+                </div>
+
+                <div class="divider text-base-content/50">Ingredients</div>
+
+                <div id="ingredients-container" class="space-y-4">
+                  <!-- Dynamic ingredients added here -->
+                </div>
+
+                <button type="button" onclick="addIngredientRow()" class="btn btn-outline w-fit btn-sm text-base-content/70 hover:text-base-content hover:border-base-content/40">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  Add Ingredient
+                </button>
+
+                <div class="flex gap-3 justify-end">
+                  <a href="/recipes" class="btn btn-ghost text-base-content/70 hover:text-base-content">Cancel</a>
+                  <button type="submit" id="recipe-submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Create Recipe
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script client:load is:html>
+  const allIngredients: Array<{id: string; name: string; type?: string | null; defaultPrice?: number | null}> = JSON.parse(`{ingredients_json}`);
+
+  let ingredientIndex = 0;
+
+  function addIngredientRow() {
+    const container = document.getElementById("ingredients-container");
+    if (!container) return;
+
+    const idx = ingredientIndex++;
+    const row = document.createElement("div");
+    row.className = "card bg-base-200 p-4 space-y-3 relative border border-base-300";
+    row.innerHTML = \`
+      <button type="button" onclick="this.parentElement.remove()" class="btn btn-ghost btn-sm text-error hover:bg-error/10 absolute top-2 right-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+      </button>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div class="form-control md:col-span-2">
+          <label class="label label-text font-medium required-column">Ingredient</label>
+          <select name="ingredients[\${idx}].ingredientId" required class="select select-bordered w-full">
+            <option value="">Select ingredient...</option>
+            \${allIngredients.map(i => \`<option value="\${i.id}">\${i.name}</option>\`).join('')}
+          </select>
+        </div>
+        <div class="form-control">
+          <label class="label label-text font-medium required-column">Amount</label>
+          <input type="number" step="0.01" min="0" name="ingredients[\${idx}].amount" placeholder="e.g., 2" class="input input-bordered w-full" required />
+        </div>
+        <div class="form-control">
+          <label class="label label-text font-medium required-column">Unit</label>
+          <input type="text" name="ingredients[\${idx}].unit" placeholder="e.g., kg, liters" class="input input-bordered w-full" required />
+        </div>
+      </div>
+      <div class="form-control">
+        <label class="label label-text">Notes</label>
+        <input type="text" name="ingredients[\${idx}].notes" placeholder="Optional notes..." class="input input-bordered w-full" />
+      </div>
+    \`;
+    container.appendChild(row);
+  }
+
+  async function handleRecipeSubmit(e: Event) {
+    e.preventDefault();
+    const form = (e as any).currentTarget as HTMLFormElement;
+    const btn = document.getElementById("recipe-submit") as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = "Creating...";
+
+    // Gather ingredient rows
+    const ingredientRows = form.querySelectorAll<HTMLInputElement>("[name^='ingredients[']");
+    const ingredientMap = new Map<string, any>();
+    ingredientRows.forEach((row) => {
+      const match = row.name.match(/ingredients\[(\d+)\]/);
+      if (!match) return;
+      const idx = match[1];
+      const nameMatch = row.name.match(/\.(.+)$/);
+      if (!nameMatch) return;
+      const field = nameMatch[1];
+      if (!ingredientMap.has(idx)) ingredientMap.set(idx, {});
+      const obj = ingredientMap.get(idx);
+      if (["amount", "ingredientId"].includes(field)) {
+        obj[field] = isNaN(Number(row.value)) ? row.value : Number(row.value);
+      } else {
+        obj[field] = row.value;
+      }
+    });
+
+    const formData = new FormData(form);
+    const data: Record<string, unknown> = {
+      name: formData.get("name") as string,
+      description: formData.get("description") as string || null,
+      brewType: formData.get("brewType") as string,
+      instructions: formData.get("instructions") as string || null,
+      ingredients: Array.from(ingredientMap.values()),
+    };
+
+    try {
+      const res = await fetch("/api/recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        window.location.href = "/recipes";
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Failed to create recipe");
+      }
+    } catch (err) {
+      alert(String(err));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Create Recipe";
+    }
+  }
+</script>
