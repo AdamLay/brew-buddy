@@ -5,7 +5,7 @@ export function Navbar() {
   const { pathname } = useLocation();
 
   return (
-    <nav className="bg-base-300 text-base-content shadow-lg border-b-2 border-primary/30">
+    <nav className="bg-base-300 text-base-content shadow-lg border-b-2 border-primary/30 print:hidden">
       <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="navbar-start">
           <Link
@@ -30,7 +30,7 @@ export function Navbar() {
             <li>
               <Link
                 to="/recipes"
-                className={`btn btn-ghost btn-sm ${pathname === "/recipes" ? "btn-active text-primary" : "hover:bg-base-100"}`}
+                className={`btn btn-ghost btn-sm ${pathname.startsWith("/recipes") ? "btn-active text-primary" : "hover:bg-base-100"}`}
               >
                 <BookOpen className="w-4 h-4 mr-1" />
                 Recipes
@@ -39,7 +39,7 @@ export function Navbar() {
             <li>
               <Link
                 to="/ingredients"
-                className={`btn btn-ghost btn-sm ${pathname === "/ingredients" ? "btn-active text-primary" : "hover:bg-base-100"}`}
+                className={`btn btn-ghost btn-sm ${pathname.startsWith("/ingredients") ? "btn-active text-primary" : "hover:bg-base-100"}`}
               >
                 <Sprout className="w-4 h-4 mr-1" />
                 Ingredients

@@ -54,12 +54,14 @@ function BatchesPage() {
         {viewMode === "table" ? (
           <BatchTable
             batches={batches}
+            onView={(id) => `/batches/${id}`}
             onEdit={(id) => `/batches/${id}/edit`}
             onDelete={(id) => () => deleteMutation.mutate(id)}
           />
         ) : (
           <BatchCards
             batches={batches}
+            onView={(id) => `/batches/${id}`}
             onEdit={(id) => `/batches/${id}/edit`}
             onDelete={(id) => () => deleteMutation.mutate(id)}
           />

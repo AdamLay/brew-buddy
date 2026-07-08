@@ -1,0 +1,178 @@
+import { BatchUpdateForm } from "@/components/batch-updates/BatchUpdateForm";
+import { BatchUpdatesList, type BatchUpdate } from "@/components/batch-updates/BatchUpdatesList";
+import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
+import { prisma } from "@/lib/db";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { Calendar, Printer } from "lucide-react";
+
+const getBatch = createServerFn({ method: "GET" })
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return prisma.batch.findUnique({
+      where: { id: data.id },
+      include: { recipe: { select: { id: true, name: true, brewType: true } } },
+    });
+  });
+
+export const Route = createFileRoute("/batches/$id/")({
+  component: BatchDetailPage,
+  loader: async ({ params }) => {
+    const batch = await getBatch({ data: { id: params.id } });
+    if (!batch) {
+      throw new Error("NOT_FOUND");
+    }
+    return { batch };
+  },
+});
+
+function BatchDetailPage() {
+  const loaderData = Route.useLoaderData();
+  const batchId = loaderData.batch.id;
+  const { data: updates } = useBatchUpdates(batchId);
+  const mutation = useCreateBatchUpdate(batchId);
+
+  const handleAddUpdate = async (data: {
+    batchId: string;
+    timestamp?: Date;
+    notes?: string;
+    image?: string;
+  }) => {
+    await mutation.mutateAsync(data);
+  };
+
+  const batch = loaderData.batch;
+  const batchUpdates = (updates as BatchUpdate[] | undefined) || [];
+
+  const statusColors: Record<string, string> = {
+    PLANNING: "badge-info",
+    FERMENTING: "badge-warning",
+    CONDITIONING: "badge-accent",
+    BOTTLED: "badge-success",
+    COMPLETE: "badge-primary",
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <Link
+        to="/batches"
+        className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary"
+      >
+        Back to Batches
+      </Link>
+
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <h1 className="text-2xl font-bold text-base-content">{batch.recipe.name}</h1>
+          <span className="text-sm text-base-content/50 uppercase">{batch.recipe.brewType}</span>
+        </div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className={`badge ${statusColors[batch.status] || "badge-ghost"}`}>
+            {batch.status}
+          </span>
+          <span className="text-xs text-base-content/50">
+            Created {new Date(batch.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+
+      {mutation.isError && (
+        <div className="alert alert-error mb-4" role="alert">
+          <span>{(mutation.error as Error).message}</span>
+        </div>
+      )}
+
+      <div className="card bg-base-100 shadow-lg border border-base-300 mb-6">
+        <div className="card-body">
+          <h2 className="card-title">Batch Details</h2>
+          <div className="grid grid-cols-2 gap-4 mt-2">
+            <div>
+              <span className="text-xs text-base-content/50">Start Date</span>
+              <p>{batch.startDate ? new Date(batch.startDate).toLocaleDateString() : "—"}</p>
+            </div>
+            {batch.endDate && (
+              <div>
+                <span className="text-xs text-base-content/50">End Date</span>
+                <p>{new Date(batch.endDate).toLocaleDateString()}</p>
+              </div>
+            )}
+            {batch.batchSize && (
+              <div>
+                <span className="text-xs text-base-content/50">Batch Size</span>
+                <p>{batch.batchSize} liters</p>
+              </div>
+            )}
+            {batch.ogReading && (
+              <div>
+                <span className="text-xs text-base-content/50">OG</span>
+                <p>{batch.ogReading}</p>
+              </div>
+            )}
+            {batch.fgReading && (
+              <div>
+                <span className="text-xs text-base-content/50">FG</span>
+                <p>{batch.fgReading}</p>
+              </div>
+            )}
+            {batch.currentGravity && (
+              <div>
+                <span className="text-xs text-base-content/50">Current Gravity</span>
+                <p>{batch.currentGravity}</p>
+              </div>
+            )}
+          </div>
+          {batch.notes && (
+            <div className="mt-4">
+              <span className="text-xs text-base-content/50">Batch Notes</span>
+              <p className="text-sm mt-1 whitespace-pre-wrap">{batch.notes}</p>
+            </div>
+          )}
+          <div className="divider my-2" />
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              to="/batches/$id/edit"
+              params={{ id: batch.id }}
+              className="btn btn-primary btn-sm"
+            >
+              Edit Batch
+            </Link>
+            <Link
+              to="/batches/$id/label"
+              params={{ id: batch.id }}
+              className="btn btn-outline btn-sm gap-2"
+            >
+              <Printer className="w-4 h-4" />
+              Print Label
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="card bg-base-100 shadow-lg border border-base-300 print:hidden">
+        <div className="card-body">
+          <h2 className="card-title mb-4">
+            Updates
+            <span className="badge badge-ghost badge-sm">{batchUpdates.length}</span>
+          </h2>
+
+          <BatchUpdateForm batchId={batchId} onSubmit={handleAddUpdate} />
+
+          <div className="divider my-6">
+            <div className="flex items-center gap-2 text-base-content/50">
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm">History</span>
+            </div>
+          </div>
+
+          {mutation.isPending ? (
+            <div className="flex justify-center py-8">
+              <span className="loading loading-spinner loading-md" />
+            </div>
+          ) : (
+            <BatchUpdatesList updates={batchUpdates} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

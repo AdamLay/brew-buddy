@@ -56,8 +56,20 @@ model Batch {
   ogReading       Float?   // actual original gravity reading
   fgReading       Float?   // actual final gravity reading
   currentGravity  Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  batchUpdates    BatchUpdate[]
+}
+
+model BatchUpdate {
+  id        String   @id @default(cuid())
+  batchId   String
+  batch     Batch    @relation(fields: [batchId], references: id, onDelete: Cascade)
+  timestamp DateTime @default(now())
+  notes     String?
+  image     String?  // base64 encoded image data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum BrewType {

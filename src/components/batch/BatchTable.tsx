@@ -30,10 +30,12 @@ function nullable(v: number | null | undefined) {
 
 export function BatchTable({
   batches,
+  onView,
   onEdit,
   onDelete,
 }: {
   batches: BatchWithRecipe[];
+  onView?: (id: string) => string;
   onEdit: (id: string) => string;
   onDelete: (id: string) => () => void;
 }) {
@@ -55,7 +57,11 @@ export function BatchTable({
             </thead>
             <tbody className="divide-y divide-base-200">
               {batches.map((batch) => (
-                <tr key={batch.id} className="hover">
+                <tr
+                  key={batch.id}
+                  className="hover cursor-pointer"
+                  onClick={() => onView && void window.location.assign(onView(batch.id))}
+                >
                   <td>
                     <div className="font-medium text-base-content">{batch.recipe.name}</div>
                     {batch.recipe.brewType && (
@@ -96,10 +102,12 @@ export function BatchTable({
 
 export function BatchCards({
   batches,
+  onView,
   onEdit,
   onDelete,
 }: {
   batches: BatchWithRecipe[];
+  onView?: (id: string) => string;
   onEdit: (id: string) => string;
   onDelete: (id: string) => () => void;
 }) {
@@ -108,7 +116,8 @@ export function BatchCards({
       {batches.map((batch) => (
         <div
           key={batch.id}
-          className="card bg-base-100 border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          className={`card bg-base-100 border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer ${onView ? "" : ""}`}
+          onClick={() => onView && void window.location.assign(onView(batch.id))}
         >
           <div className="card-body p-5 gap-3">
             <div className="flex items-start justify-between gap-2">

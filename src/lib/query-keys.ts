@@ -22,3 +22,9 @@ export const batchKeys = {
   details: () => [...batchKeys.all, "detail"] as const,
   byRecipe: (recipeId: string) => [...batchKeys.all, "byRecipe", recipeId] as const,
 };
+
+export const batchUpdateKeys = {
+  all: ["batchUpdates"] as const,
+  lists: () => [...batchUpdateKeys.all, "list"] as const,
+  byBatch: (batchId: string) => [...batchUpdateKeys.all, "byBatch", batchId] as const,
+};
