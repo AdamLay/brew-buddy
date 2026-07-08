@@ -34,11 +34,11 @@ COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy built output from build stage
-COPY --from=build /app/.output .output
+COPY --from=build /app/.output .
 
 ENV PORT=3000
 ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "server/index.mjs"]
