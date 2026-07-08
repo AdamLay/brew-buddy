@@ -1,5 +1,7 @@
 import { recipeSchema } from "#/lib/recipes/recipe-validation.ts";
+import { useIngredients } from "@/lib/ingredients/use-ingredients";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export type Recipe = {
@@ -11,6 +13,18 @@ export type Recipe = {
   finalGravity?: number | null;
   batchSize?: number | null;
   instructions?: string | null;
+  ingredients?: {
+    id: string;
+    amount: number;
+    unit: string;
+    notes: string | null;
+    ingredientId: string;
+  }[];
+};
+
+export type Ingredient = {
+  id: string;
+  name: string;
 };
 
 const BREW_TYPES = [
@@ -28,6 +42,7 @@ type FormValues = {
   finalGravity?: number | null;
   batchSize?: number | null;
   instructions?: string;
+  ingredients: Array<{ ingredientId: string; amount: number; unit: string; notes?: string }>;
 };
 
 interface RecipeFormProps {
@@ -36,6 +51,43 @@ interface RecipeFormProps {
 }
 
 export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
+  const { data: ingredients } = useIngredients();
+  const ingredientList: Ingredient[] = (ingredients ?? []) as Ingredient[];
+
+  const [formIngredients, setFormIngredients] = useState<
+    Array<{ ingredientId: string; amount: number; unit: string; notes: string }>
+  >(
+    recipe?.ingredients?.map((ing) => ({
+      ingredientId: ing.ingredientId,
+      amount: ing.amount,
+      unit: ing.unit,
+      notes: ing.notes ?? "",
+    })) ?? [],
+  );
+
+  const addIngredient = () => {
+    setFormIngredients([...formIngredients, { ingredientId: "", amount: 0, unit: "", notes: "" }]);
+  };
+
+  const removeIngredient = (index: number) => {
+    setFormIngredients(formIngredients.filter((_, i) => i !== index));
+  };
+
+  const updateIngredient = (index: number, field: string, value: string | number) => {
+    const updated = [...formIngredients];
+    if (field === "amount") {
+      updated[index] = {
+        ...updated[index],
+        amount: typeof value === "number" ? value : parseFloat(value),
+      };
+    } else if (field === "notes") {
+      updated[index] = { ...updated[index], notes: value as string };
+    } else {
+      updated[index] = { ...updated[index], [field]: value };
+    }
+    setFormIngredients(updated);
+  };
+
   const form = useForm<FormValues>({
     resolver: zodResolver(recipeSchema as any),
     defaultValues: {
@@ -46,8 +98,14 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
       finalGravity: recipe?.finalGravity ?? undefined,
       batchSize: recipe?.batchSize ?? undefined,
       instructions: recipe?.instructions ?? undefined,
+      ingredients: formIngredients,
     },
   });
+
+  // Sync defaultValues when formIngredients changes (e.g. after init from recipe)
+  useEffect(() => {
+    form.setValue("ingredients", formIngredients);
+  }, [formIngredients, form]);
 
   const { control, formState } = form;
 
@@ -258,6 +316,76 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
               </>
             )}
           />
+        </div>
+
+        <div className="divider">Ingredients</div>
+
+        <div className="space-y-4">
+          {formIngredients.map((ing, index) => (
+            <div key={index} className="card bg-base-200 p-4 space-y-3 relative">
+              <button
+                type="button"
+                onClick={() => removeIngredient(index)}
+                className="btn btn-error btn-sm btn-square absolute top-2 right-2"
+                title="Remove ingredient"
+              >
+                ✕
+              </button>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="form-control md:col-span-2">
+                  <label className="label label-text font-medium required-column">Ingredient</label>
+                  <select
+                    value={ing.ingredientId}
+                    onChange={(e) => updateIngredient(index, "ingredientId", e.target.value)}
+                    className="select select-bordered w-full"
+                  >
+                    <option value="">Select ingredient...</option>
+                    {ingredientList.map((i) => (
+                      <option key={i.id} value={i.id}>
+                        {i.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-control">
+                  <label className="label label-text font-medium required-column">Amount</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={ing.amount || ""}
+                    onChange={(e) => updateIngredient(index, "amount", e.target.value)}
+                    placeholder="e.g., 2"
+                    className="input input-bordered w-full"
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label label-text font-medium required-column">Unit</label>
+                  <input
+                    type="text"
+                    value={ing.unit}
+                    onChange={(e) => updateIngredient(index, "unit", e.target.value)}
+                    placeholder="e.g., kg, liters"
+                    className="input input-bordered w-full"
+                  />
+                </div>
+              </div>
+              <div className="form-control">
+                <label className="label label-text font-medium">Notes</label>
+                <input
+                  type="text"
+                  value={ing.notes}
+                  onChange={(e) => updateIngredient(index, "notes", e.target.value)}
+                  placeholder="Optional notes..."
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+          ))}
+
+          <button type="button" onClick={addIngredient} className="btn btn-outline w-fit">
+            + Add Ingredient
+          </button>
         </div>
 
         <div className="flex gap-3 justify-end">

@@ -9,12 +9,27 @@ import { recipeSchema, type RecipeData } from "./recipe-validation";
 const fetchRecipesFn = createServerFn({ method: "GET" }).handler(async () => {
   const recipes = await prisma.recipe.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { batches: true } } },
+    include: {
+      _count: { select: { batches: true } },
+      ingredients: { include: { ingredient: true } },
+    },
   });
   return recipes;
 });
 
-export type RecipeWithCount = any & { _count: { batches: number } };
+export type RecipeWithCount = any & {
+  _count: { batches: number };
+  ingredients: {
+    id: string;
+    amount: number;
+    unit: string;
+    notes: string | null;
+    ingredientId: string;
+    recipeId: string;
+    createdAt: Date;
+    ingredient: any;
+  }[];
+};
 
 export function useRecipes(): UseQueryResult<RecipeWithCount[], unknown> {
   return useQuery({
@@ -26,7 +41,19 @@ export function useRecipes(): UseQueryResult<RecipeWithCount[], unknown> {
 export const createRecipeFn = createServerFn({ method: "POST" })
   .validator(recipeSchema)
   .handler(async ({ data }) => {
-    return await prisma.recipe.create({ data });
+    const { ingredients, ...recipeData } = data;
+    return await prisma.$transaction(async (tx) => {
+      const recipe = await tx.recipe.create({ data: recipeData });
+      if (ingredients?.length) {
+        await tx.recipeIngredient.createMany({
+          data: ingredients.map((ing) => ({ ...ing, recipeId: recipe.id })),
+        });
+      }
+      return tx.recipe.findUnique({
+        where: { id: recipe.id },
+        include: { ingredients: { include: { ingredient: true } } },
+      });
+    });
   });
 
 export function useCreateRecipe(onSuccess?: () => void) {
@@ -47,7 +74,20 @@ export const updateRecipeFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const existing = await prisma.recipe.findUnique({ where: { id: data.id } });
     if (!existing) throw new Error("NOT_FOUND");
-    return prisma.recipe.update({ where: { id: data.id }, data: data.data });
+    const { ingredients, ...recipeData } = data.data;
+    return await prisma.$transaction(async (tx) => {
+      await tx.recipeIngredient.deleteMany({ where: { recipeId: data.id } });
+      if (ingredients?.length) {
+        await tx.recipeIngredient.createMany({
+          data: ingredients.map((ing) => ({ ...ing, recipeId: data.id })),
+        });
+      }
+      return tx.recipe.update({
+        where: { id: data.id },
+        data: recipeData,
+        include: { ingredients: { include: { ingredient: true } } },
+      });
+    });
   });
 
 export function useUpdateRecipe(id: string, onSuccess?: () => void) {

@@ -9,6 +9,7 @@ const getRecipe = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     return prisma.recipe.findUnique({
       where: { id: data.id },
+      include: { ingredients: { include: { ingredient: true } } },
     });
   });
 
