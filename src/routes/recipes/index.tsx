@@ -2,6 +2,7 @@ import { deleteRecipeFn, useRecipes } from "#/lib/recipes/use-recipes";
 import { recipeKeys } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/recipes/")({
   component: RecipesPage,
@@ -22,6 +23,7 @@ function RecipesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Recipes</h1>
         <Link to="/recipes/new" className="btn btn-primary">
+          <Plus className="w-4 h-4 mr-1" />
           New Recipe
         </Link>
       </div>
@@ -33,9 +35,10 @@ function RecipesPage() {
       ) : !recipes || recipes.length === 0 ? (
         <div className="text-center py-16 bg-base-100 rounded-xl">
           <p className="text-gray-500 text-lg mb-4">No recipes yet. Create your first recipe!</p>
-          <Link to="/recipes/new" className="btn btn-primary">
-            Create Recipe
-          </Link>
+            <Link to="/recipes/new" className="btn btn-primary">
+              <Plus className="w-4 h-4 mr-1" />
+              Create Recipe
+            </Link>
         </div>
       ) : (
         <div className="card bg-base-100 shadow-xl">
@@ -46,8 +49,6 @@ function RecipesPage() {
                   <tr className="bg-base-200">
                     <th>Name</th>
                     <th>Type</th>
-                    <th>Batch Size</th>
-                    <th>OG / FG</th>
                     <th>Batches</th>
                     <th className="text-right">Actions</th>
                   </tr>
@@ -73,16 +74,6 @@ function RecipesPage() {
                             recipe.brewType.slice(1).toLowerCase()}
                         </span>
                       </td>
-                      <td>{recipe.batchSize ? `${recipe.batchSize}L` : "—"}</td>
-                      <td className="text-sm">
-                        {recipe.originalGravity ? ` ${recipe.originalGravity}` : "—"}
-                        {recipe.finalGravity && (
-                          <>
-                            {" → "}
-                            {recipe.finalGravity}
-                          </>
-                        )}
-                      </td>
                       <td>{recipe._count.batches}</td>
                       <td className="text-right">
                         <div className="flex gap-2 justify-end">
@@ -90,7 +81,7 @@ function RecipesPage() {
                             to={`/recipes/${recipe.id}/edit` as any}
                             className="btn btn-sm btn-ghost"
                           >
-                            Edit
+                            <Pencil className="w-4 h-4" />
                           </Link>
                           <DeleteButton onDelete={() => deleteMutation.mutate(recipe.id)} />
                         </div>
@@ -119,7 +110,7 @@ function DeleteButton({ onDelete }: { onDelete: () => void }) {
       className="inline"
     >
       <button type="submit" className="btn btn-sm btn-ghost text-error">
-        Delete
+        <Trash2 className="w-4 h-4" />
       </button>
     </form>
   );

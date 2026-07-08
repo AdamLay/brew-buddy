@@ -3,6 +3,7 @@ import { RecipeForm } from "@/components/recipe/RecipeForm";
 import { prisma } from "@/lib/db";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { ArrowLeft } from "lucide-react";
 
 const getRecipe = createServerFn({ method: "GET" })
   .validator((data: { id: string }) => data)
@@ -26,14 +27,22 @@ export const Route = createFileRoute("/recipes/$id/edit")({
 
 function EditRecipePage() {
   const loaderData = Route.useLoaderData();
-  const mutation = useUpdateRecipe(loaderData.recipe.id);
+  const mutation = useUpdateRecipe(loaderData.recipe.id, () => {
+    window.scrollTo(0, 0);
+  });
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <Link to="/recipes" className="btn btn-ghost btn-sm mb-4">
-        &larr; Back to Recipes
+        <ArrowLeft className="w-4 h-4 mr-1" />
+        Back to Recipes
       </Link>
       <h1 className="text-3xl font-bold mb-6">Edit Recipe</h1>
+      {mutation.isSuccess && (
+        <div className="alert alert-success mb-6">
+          <span>Recipe updated successfully!</span>
+        </div>
+      )}
       {mutation.isError && (
         <div className="alert alert-error mb-6">
           <span>{(mutation.error as Error).message}</span>

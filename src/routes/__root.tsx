@@ -3,6 +3,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { Home } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import appCss from "../styles.css?url";
 
@@ -37,6 +38,7 @@ function NotFound() {
       <h1 className="text-6xl font-bold mb-4">404</h1>
       <p className="text-xl text-gray-500 mb-6">Page not found</p>
       <a href="/" className="btn btn-primary">
+        <Home className="w-4 h-4 mr-1" />
         Go Home
       </a>
     </div>

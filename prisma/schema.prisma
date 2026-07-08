@@ -11,14 +11,11 @@ datasource db {
 }
 
 model Recipe {
-  id              String          @id @default(cuid())
-  name            String
-  description     String?
-  brewType        BrewType
-  originalGravity Float?
-  finalGravity    Float?
-  batchSize       Float?          // in liters
-  instructions    String?
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  brewType     BrewType
+  instructions String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   batches         Batch[]
@@ -48,16 +45,17 @@ model RecipeIngredient {
 }
 
 model Batch {
-  id            String   @id @default(cuid())
-  recipeId      String
-  recipe        Recipe   @relation(fields: [recipeId], references: id, onDelete: Cascade)
-  startDate     DateTime @default(now())
-  endDate       DateTime?
-  status        BatchStatus @default(PLANNING)
-  notes         String?
-  ogReading     Float?   // original gravity reading
-  fgReading     Float?   // final gravity reading
-  currentGravity Float?
+  id              String   @id @default(cuid())
+  recipeId        String
+  recipe          Recipe   @relation(fields: [recipeId], references: id, onDelete: Cascade)
+  startDate       DateTime @default(now())
+  endDate         DateTime?
+  status          BatchStatus @default(PLANNING)
+  notes           String?
+  batchSize       Float?   // in liters
+  ogReading       Float?   // actual original gravity reading
+  fgReading       Float?   // actual final gravity reading
+  currentGravity  Float?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

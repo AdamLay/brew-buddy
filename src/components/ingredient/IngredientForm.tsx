@@ -1,6 +1,8 @@
 import { INGREDIENT_TYPES, ingredientSchema } from "#/lib/ingredients/ingredient-validation";
+import { FormField } from "@/components/ui/FormFields";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { Save, Sprout } from "lucide-react";
 
 export type Ingredient = {
   id: string;
@@ -40,88 +42,76 @@ export function IngredientForm({
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-4">
-        <div className="form-control w-full">
-          <label className="label" htmlFor="ingredient-name">
-            <span className="label-text required">Name *</span>
-          </label>
+        <FormField label="Name" htmlFor="ingredient-name" required error={formState.errors.name}>
           <Controller
             name="name"
             control={control}
             render={({ field }) => (
-              <>
-                <input
-                  id="ingredient-name"
-                  {...field}
-                  type="text"
-                  placeholder="e.g. Granny Smith Apple"
-                  className={`input input-bordered w-full ${formState.errors.name ? "border-error" : ""}`}
-                />
-                {formState.errors.name && (
-                  <span className="text-error text-sm mt-1">{formState.errors.name.message}</span>
-                )}
-              </>
+              <input
+                id="ingredient-name"
+                {...field}
+                type="text"
+                placeholder="e.g. Granny Smith Apple"
+                className="input input-bordered w-full"
+              />
             )}
           />
-        </div>
+        </FormField>
 
-        <div className="form-control w-full">
-          <label className="label" htmlFor="ingredient-type">
-            <span className="label-text">Type</span>
-          </label>
+        <FormField label="Type" htmlFor="ingredient-type" error={formState.errors.type}>
           <Controller
             name="type"
             control={control}
             render={({ field }) => (
-              <>
-                <select
-                  id="ingredient-type"
-                  {...field}
-                  value={field.value ?? ""}
-                  className={`select select-bordered w-full ${formState.errors.type ? "border-error" : ""}`}
-                >
-                  <option value="">Select type...</option>
-                  {INGREDIENT_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {t.charAt(0).toUpperCase() + t.slice(1)}
-                    </option>
-                  ))}
-                </select>
-                {formState.errors.type && (
-                  <span className="text-error text-sm mt-1">{formState.errors.type.message}</span>
-                )}
-              </>
+              <select
+                id="ingredient-type"
+                {...field}
+                value={field.value ?? ""}
+                className="select select-bordered w-full"
+              >
+                <option value="">Select type...</option>
+                {INGREDIENT_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </option>
+                ))}
+              </select>
             )}
           />
-        </div>
+        </FormField>
 
-        <div className="form-control w-full">
-          <label className="label" htmlFor="ingredient-description">
-            <span className="label-text">Description</span>
-          </label>
+        <FormField
+          label="Description"
+          htmlFor="ingredient-description"
+          error={formState.errors.description}
+        >
           <Controller
             name="description"
             control={control}
             render={({ field }) => (
-              <>
-                <textarea
-                  id="ingredient-description"
-                  {...field}
-                  className={`textarea textarea-bordered h-24 ${formState.errors.description ? "border-error" : ""}`}
-                  placeholder="Optional description..."
-                  value={field.value ?? ""}
-                />
-                {formState.errors.description && (
-                  <span className="text-error text-sm mt-1">
-                    {formState.errors.description.message}
-                  </span>
-                )}
-              </>
+              <textarea
+                id="ingredient-description"
+                {...field}
+                className="textarea textarea-bordered w-full h-24"
+                placeholder="Optional description..."
+                value={field.value ?? ""}
+              />
             )}
           />
-        </div>
+        </FormField>
 
         <button type="submit" className="btn btn-primary mt-4">
-          {submitLabel}
+          {submitLabel === "Create Ingredient" ? (
+            <>
+              <Sprout className="w-4 h-4 mr-1" />
+              {submitLabel}
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-1" />
+              {submitLabel}
+            </>
+          )}
         </button>
       </div>
     </form>

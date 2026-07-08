@@ -2,6 +2,7 @@ import { useDeleteIngredient, useIngredients } from "#/lib/ingredients/use-ingre
 import { ingredientKeys as ik } from "@/lib/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/ingredients/")({
   component: IngredientsPage,
@@ -19,6 +20,7 @@ function IngredientsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Ingredients</h1>
         <Link to="/ingredients/new" className="btn btn-primary">
+          <Plus className="w-4 h-4 mr-1" />
           New Ingredient
         </Link>
       </div>
@@ -33,6 +35,7 @@ function IngredientsPage() {
             No ingredients yet. Create your first ingredient!
           </p>
           <Link to="/ingredients/new" className="btn btn-primary">
+            <Plus className="w-4 h-4 mr-1" />
             Create Ingredient
           </Link>
         </div>
@@ -80,7 +83,7 @@ function IngredientsPage() {
                             href={`/ingredients/${ingredient.id}/edit`}
                             className="btn btn-sm btn-ghost"
                           >
-                            Edit
+                            <Pencil className="w-4 h-4" />
                           </a>
                           <DeleteButton onDelete={() => deleteMutation.mutate(ingredient.id)} />
                         </div>
@@ -109,7 +112,7 @@ function DeleteButton({ onDelete }: { onDelete: () => void }) {
       className="inline"
     >
       <button type="submit" className="btn btn-sm btn-ghost text-error">
-        Delete
+        <Trash2 className="w-4 h-4" />
       </button>
     </form>
   );

@@ -14,3 +14,11 @@ export const ingredientKeys = {
   detail: (id: string) => [...ingredientKeys.details(), id] as const,
   details: () => [...ingredientKeys.all, "detail"] as const,
 };
+
+export const batchKeys = {
+  all: ["batches"] as const,
+  lists: () => [...batchKeys.all, "list"] as const,
+  detail: (id: string) => [...batchKeys.details(), id] as const,
+  details: () => [...batchKeys.all, "detail"] as const,
+  byRecipe: (recipeId: string) => [...batchKeys.all, "byRecipe", recipeId] as const,
+};

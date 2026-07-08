@@ -1,17 +1,16 @@
 import { recipeSchema } from "#/lib/recipes/recipe-validation.ts";
+import { FormField } from "@/components/ui/FormFields";
 import { useIngredients } from "@/lib/ingredients/use-ingredients";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { Plus, Save, X } from "lucide-react";
 
 export type Recipe = {
   id: string;
   name: string;
   description?: string | null;
   brewType: "CIDER" | "WINE" | "BEER" | "OTHER";
-  originalGravity?: number | null;
-  finalGravity?: number | null;
-  batchSize?: number | null;
   instructions?: string | null;
   ingredients?: {
     id: string;
@@ -38,9 +37,6 @@ type FormValues = {
   name: string;
   description?: string;
   brewType: (typeof BREW_TYPES)[number]["value"];
-  originalGravity?: number | null;
-  finalGravity?: number | null;
-  batchSize?: number | null;
   instructions?: string;
   ingredients: Array<{ ingredientId: string; amount: number; unit: string; notes?: string }>;
 };
@@ -94,9 +90,6 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
       name: recipe?.name ?? "",
       description: recipe?.description ?? undefined,
       brewType: ((recipe?.brewType as FormValues["brewType"]) ?? "CIDER") as FormValues["brewType"],
-      originalGravity: recipe?.originalGravity ?? undefined,
-      finalGravity: recipe?.finalGravity ?? undefined,
-      batchSize: recipe?.batchSize ?? undefined,
       instructions: recipe?.instructions ?? undefined,
       ingredients: formIngredients,
     },
@@ -112,211 +105,90 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-6">
-        <div className="form-control w-full">
-          <label className="label" htmlFor="recipe-name">
-            <span className="label-text font-medium required-column">Name</span>
-          </label>
+        <FormField label="Name" htmlFor="recipe-name" required error={formState.errors.name}>
           <Controller
             name="name"
             control={control}
             render={({ field }) => (
-              <>
-                <input
-                  id="recipe-name"
-                  {...field}
-                  type="text"
-                  placeholder="e.g., Classic Apple Cider"
-                  className={`input input-bordered w-full ${formState.errors.name ? "border-error" : ""}`}
-                />
-                {formState.errors.name && (
-                  <span className="text-error text-sm mt-1">{formState.errors.name.message}</span>
-                )}
-              </>
+              <input
+                id="recipe-name"
+                {...field}
+                type="text"
+                placeholder="e.g., Classic Apple Cider"
+                className="input input-bordered w-full"
+              />
             )}
           />
-        </div>
+        </FormField>
 
-        <div className="form-control w-full">
-          <label className="label" htmlFor="recipe-description">
-            <span className="label-text font-medium">Description</span>
-          </label>
+        <FormField
+          label="Description"
+          htmlFor="recipe-description"
+          error={formState.errors.description}
+        >
           <Controller
             name="description"
             control={control}
             render={({ field }) => (
-              <>
-                <textarea
-                  id="recipe-description"
-                  {...field}
-                  placeholder="Brief description of this recipe..."
-                  className={`textarea textarea-bordered h-24 ${formState.errors.description ? "border-error" : ""}`}
-                />
-                {formState.errors.description && (
-                  <span className="text-error text-sm mt-1">
-                    {formState.errors.description.message}
-                  </span>
-                )}
-              </>
+              <textarea
+                id="recipe-description"
+                {...field}
+                placeholder="Brief description of this recipe..."
+                rows={3}
+                className="textarea textarea-bordered w-full"
+              />
             )}
           />
-        </div>
+        </FormField>
 
-        <div className="form-control w-full lg:w-1/2">
-          <label className="label" htmlFor="recipe-brewType">
-            <span className="label-text font-medium required-column">Brew Type</span>
-          </label>
+        <FormField
+          label="Brew Type"
+          htmlFor="recipe-brewType"
+          required
+          error={formState.errors.brewType}
+        >
           <Controller
             name="brewType"
             control={control}
             render={({ field }) => (
-              <>
-                <select
-                  id="recipe-brewType"
-                  {...field}
-                  value={field.value ?? ""}
-                  className={`select select-bordered w-full ${formState.errors.brewType ? "border-error" : ""}`}
-                >
-                  <option value="" disabled>
-                    Select brew type...
+              <select
+                id="recipe-brewType"
+                {...field}
+                value={field.value ?? ""}
+                className="select select-bordered w-full"
+              >
+                <option value="" disabled>
+                  Select brew type...
+                </option>
+                {BREW_TYPES.map((bt) => (
+                  <option key={bt.value} value={bt.value}>
+                    {bt.label}
                   </option>
-                  {BREW_TYPES.map((bt) => (
-                    <option key={bt.value} value={bt.value}>
-                      {bt.label}
-                    </option>
-                  ))}
-                </select>
-                {formState.errors.brewType && (
-                  <span className="text-error text-sm mt-1">
-                    {formState.errors.brewType.message}
-                  </span>
-                )}
-              </>
+                ))}
+              </select>
             )}
           />
-        </div>
+        </FormField>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="form-control w-full">
-            <label className="label" htmlFor="recipe-originalGravity">
-              <span className="label-text font-medium">Original Gravity</span>
-            </label>
-            <Controller
-              name="originalGravity"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <input
-                    id="recipe-originalGravity"
-                    {...field}
-                    type="number"
-                    step="0.001"
-                    placeholder="e.g., 1.050"
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const v = e.target.value === "" ? null : parseFloat(e.target.value);
-                      field.onChange(v);
-                    }}
-                    className={`input input-bordered w-full ${formState.errors.originalGravity ? "border-error" : ""}`}
-                  />
-                  {formState.errors.originalGravity && (
-                    <span className="text-error text-sm mt-1">
-                      {formState.errors.originalGravity.message}
-                    </span>
-                  )}
-                </>
-              )}
-            />
-          </div>
-
-          <div className="form-control w-full">
-            <label className="label" htmlFor="recipe-finalGravity">
-              <span className="label-text font-medium">Final Gravity</span>
-            </label>
-            <Controller
-              name="finalGravity"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <input
-                    id="recipe-finalGravity"
-                    {...field}
-                    type="number"
-                    step="0.001"
-                    placeholder="e.g., 1.010"
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const v = e.target.value === "" ? null : parseFloat(e.target.value);
-                      field.onChange(v);
-                    }}
-                    className={`input input-bordered w-full ${formState.errors.finalGravity ? "border-error" : ""}`}
-                  />
-                  {formState.errors.finalGravity && (
-                    <span className="text-error text-sm mt-1">
-                      {formState.errors.finalGravity.message}
-                    </span>
-                  )}
-                </>
-              )}
-            />
-          </div>
-
-          <div className="form-control w-full">
-            <label className="label" htmlFor="recipe-batchSize">
-              <span className="label-text font-medium">Batch Size (L)</span>
-            </label>
-            <Controller
-              name="batchSize"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <input
-                    id="recipe-batchSize"
-                    {...field}
-                    type="number"
-                    step="0.1"
-                    placeholder="e.g., 20"
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const v = e.target.value === "" ? null : parseFloat(e.target.value);
-                      field.onChange(v);
-                    }}
-                    className={`input input-bordered w-full ${formState.errors.batchSize ? "border-error" : ""}`}
-                  />
-                  {formState.errors.batchSize && (
-                    <span className="text-error text-sm mt-1">
-                      {formState.errors.batchSize.message}
-                    </span>
-                  )}
-                </>
-              )}
-            />
-          </div>
-        </div>
-
-        <div className="form-control w-full">
-          <label className="label" htmlFor="recipe-instructions">
-            <span className="label-text font-medium">Instructions</span>
-          </label>
+        <FormField
+          label="Instructions"
+          htmlFor="recipe-instructions"
+          error={formState.errors.instructions}
+        >
           <Controller
             name="instructions"
             control={control}
             render={({ field }) => (
-              <>
-                <textarea
-                  id="recipe-instructions"
-                  {...field}
-                  placeholder="Step-by-step brewing instructions..."
-                  className={`textarea textarea-bordered h-40 ${formState.errors.instructions ? "border-error" : ""}`}
-                />
-                {formState.errors.instructions && (
-                  <span className="text-error text-sm mt-1">
-                    {formState.errors.instructions.message}
-                  </span>
-                )}
-              </>
+              <textarea
+                id="recipe-instructions"
+                {...field}
+                placeholder="Step-by-step brewing instructions..."
+                rows={5}
+                className="textarea textarea-bordered w-full"
+              />
             )}
           />
-        </div>
+        </FormField>
 
         <div className="divider">Ingredients</div>
 
@@ -329,7 +201,7 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
                 className="btn btn-error btn-sm btn-square absolute top-2 right-2"
                 title="Remove ingredient"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="form-control md:col-span-2">
@@ -384,7 +256,8 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
           ))}
 
           <button type="button" onClick={addIngredient} className="btn btn-outline w-fit">
-            + Add Ingredient
+            <Plus className="w-4 h-4 mr-1" />
+            Add Ingredient
           </button>
         </div>
 
@@ -399,6 +272,7 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
             </a>
           )}
           <button type="submit" className="btn btn-primary">
+            <Save className="w-4 h-4 mr-1" />
             {recipe ? "Update Recipe" : "Create Recipe"}
           </button>
         </div>

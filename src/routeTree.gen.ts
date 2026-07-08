@@ -9,20 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as BatchesRouteImport } from './routes/batches'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecipesIndexRouteImport } from './routes/recipes/index'
 import { Route as IngredientsIndexRouteImport } from './routes/ingredients/index'
+import { Route as BatchesIndexRouteImport } from './routes/batches/index'
 import { Route as RecipesNewRouteImport } from './routes/recipes/new'
 import { Route as IngredientsNewRouteImport } from './routes/ingredients/new'
+import { Route as BatchesNewRouteImport } from './routes/batches/new'
 import { Route as RecipesIdEditRouteImport } from './routes/recipes/$id/edit'
 import { Route as IngredientsIdEditRouteImport } from './routes/ingredients/$id/edit'
+import { Route as BatchesIdEditRouteImport } from './routes/batches/$id/edit'
 
-const BatchesRoute = BatchesRouteImport.update({
-  id: '/batches',
-  path: '/batches',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -38,6 +35,11 @@ const IngredientsIndexRoute = IngredientsIndexRouteImport.update({
   path: '/ingredients/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BatchesIndexRoute = BatchesIndexRouteImport.update({
+  id: '/batches/',
+  path: '/batches/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecipesNewRoute = RecipesNewRouteImport.update({
   id: '/recipes/new',
   path: '/recipes/new',
@@ -46,6 +48,11 @@ const RecipesNewRoute = RecipesNewRouteImport.update({
 const IngredientsNewRoute = IngredientsNewRouteImport.update({
   id: '/ingredients/new',
   path: '/ingredients/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BatchesNewRoute = BatchesNewRouteImport.update({
+  id: '/batches/new',
+  path: '/batches/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecipesIdEditRoute = RecipesIdEditRouteImport.update({
@@ -58,35 +65,46 @@ const IngredientsIdEditRoute = IngredientsIdEditRouteImport.update({
   path: '/ingredients/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BatchesIdEditRoute = BatchesIdEditRouteImport.update({
+  id: '/batches/$id/edit',
+  path: '/batches/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/batches': typeof BatchesRoute
+  '/batches/new': typeof BatchesNewRoute
   '/ingredients/new': typeof IngredientsNewRoute
   '/recipes/new': typeof RecipesNewRoute
+  '/batches/': typeof BatchesIndexRoute
   '/ingredients/': typeof IngredientsIndexRoute
   '/recipes/': typeof RecipesIndexRoute
+  '/batches/$id/edit': typeof BatchesIdEditRoute
   '/ingredients/$id/edit': typeof IngredientsIdEditRoute
   '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/batches': typeof BatchesRoute
+  '/batches/new': typeof BatchesNewRoute
   '/ingredients/new': typeof IngredientsNewRoute
   '/recipes/new': typeof RecipesNewRoute
+  '/batches': typeof BatchesIndexRoute
   '/ingredients': typeof IngredientsIndexRoute
   '/recipes': typeof RecipesIndexRoute
+  '/batches/$id/edit': typeof BatchesIdEditRoute
   '/ingredients/$id/edit': typeof IngredientsIdEditRoute
   '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/batches': typeof BatchesRoute
+  '/batches/new': typeof BatchesNewRoute
   '/ingredients/new': typeof IngredientsNewRoute
   '/recipes/new': typeof RecipesNewRoute
+  '/batches/': typeof BatchesIndexRoute
   '/ingredients/': typeof IngredientsIndexRoute
   '/recipes/': typeof RecipesIndexRoute
+  '/batches/$id/edit': typeof BatchesIdEditRoute
   '/ingredients/$id/edit': typeof IngredientsIdEditRoute
   '/recipes/$id/edit': typeof RecipesIdEditRoute
 }
@@ -94,55 +112,56 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/batches'
+    | '/batches/new'
     | '/ingredients/new'
     | '/recipes/new'
+    | '/batches/'
     | '/ingredients/'
     | '/recipes/'
+    | '/batches/$id/edit'
     | '/ingredients/$id/edit'
     | '/recipes/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/batches'
+    | '/batches/new'
     | '/ingredients/new'
     | '/recipes/new'
+    | '/batches'
     | '/ingredients'
     | '/recipes'
+    | '/batches/$id/edit'
     | '/ingredients/$id/edit'
     | '/recipes/$id/edit'
   id:
     | '__root__'
     | '/'
-    | '/batches'
+    | '/batches/new'
     | '/ingredients/new'
     | '/recipes/new'
+    | '/batches/'
     | '/ingredients/'
     | '/recipes/'
+    | '/batches/$id/edit'
     | '/ingredients/$id/edit'
     | '/recipes/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BatchesRoute: typeof BatchesRoute
+  BatchesNewRoute: typeof BatchesNewRoute
   IngredientsNewRoute: typeof IngredientsNewRoute
   RecipesNewRoute: typeof RecipesNewRoute
+  BatchesIndexRoute: typeof BatchesIndexRoute
   IngredientsIndexRoute: typeof IngredientsIndexRoute
   RecipesIndexRoute: typeof RecipesIndexRoute
+  BatchesIdEditRoute: typeof BatchesIdEditRoute
   IngredientsIdEditRoute: typeof IngredientsIdEditRoute
   RecipesIdEditRoute: typeof RecipesIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/batches': {
-      id: '/batches'
-      path: '/batches'
-      fullPath: '/batches'
-      preLoaderRoute: typeof BatchesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -164,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IngredientsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/batches/': {
+      id: '/batches/'
+      path: '/batches'
+      fullPath: '/batches/'
+      preLoaderRoute: typeof BatchesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recipes/new': {
       id: '/recipes/new'
       path: '/recipes/new'
@@ -176,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/ingredients/new'
       fullPath: '/ingredients/new'
       preLoaderRoute: typeof IngredientsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/batches/new': {
+      id: '/batches/new'
+      path: '/batches/new'
+      fullPath: '/batches/new'
+      preLoaderRoute: typeof BatchesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recipes/$id/edit': {
@@ -192,16 +225,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IngredientsIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/batches/$id/edit': {
+      id: '/batches/$id/edit'
+      path: '/batches/$id/edit'
+      fullPath: '/batches/$id/edit'
+      preLoaderRoute: typeof BatchesIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BatchesRoute: BatchesRoute,
+  BatchesNewRoute: BatchesNewRoute,
   IngredientsNewRoute: IngredientsNewRoute,
   RecipesNewRoute: RecipesNewRoute,
+  BatchesIndexRoute: BatchesIndexRoute,
   IngredientsIndexRoute: IngredientsIndexRoute,
   RecipesIndexRoute: RecipesIndexRoute,
+  BatchesIdEditRoute: BatchesIdEditRoute,
   IngredientsIdEditRoute: IngredientsIdEditRoute,
   RecipesIdEditRoute: RecipesIdEditRoute,
 }
