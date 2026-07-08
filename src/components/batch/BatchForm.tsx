@@ -1,13 +1,28 @@
 import { FormField } from "@/components/ui/FormFields";
 import { BATCH_STATUSES, batchSchema } from "@/lib/batches/batch-validation";
+import { useRecipeIngredients } from "@/lib/batches/use-batches";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Beaker, Save, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Beaker, Save, X } from "lucide-react";
-import { useRecipeIngredients } from "@/lib/batches/use-batches";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FormValues = any;
+
+export type BatchIngredient = {
+  id: string;
+  recipeIngredientId: string;
+  ingredient: {
+    id: string;
+    name: string;
+    defaultPrice: number | null;
+  };
+  recipeIngredient: {
+    amount: number;
+    unit: string;
+  };
+  price: number | null;
+};
 
 export type Batch = {
   id: string;
@@ -20,6 +35,7 @@ export type Batch = {
   ogReading?: number | null;
   fgReading?: number | null;
   currentGravity?: number | null;
+  ingredients?: BatchIngredient[];
 };
 
 export type IngredientPrice = {
@@ -29,6 +45,7 @@ export type IngredientPrice = {
   unit: string;
   defaultPrice: number | null;
   priceOverride: number | null;
+  rawValue: string;
   recipeIngredientId: string;
 };
 
@@ -48,6 +65,7 @@ export function BatchForm({
   onSubmit,
 }: BatchFormProps) {
   const [ingredients, setIngredients] = useState<IngredientPrice[]>([]);
+  const [focusedRecipeId, setFocusedRecipeId] = useState<string | null>(null);
   const isSubmittingRef = useRef(false);
 
   const form = useForm<FormValues>({
@@ -92,8 +110,9 @@ export function BatchForm({
     [ingredients, form, onSubmit],
   );
 
-  const { data: rawIngredients, isLoading: ingredientsLoading } =
-    useRecipeIngredients(recipeId || "");
+  const { data: rawIngredients, isLoading: ingredientsLoading } = useRecipeIngredients(
+    recipeId || "",
+  );
 
   useEffect(() => {
     if (!rawIngredients) {
@@ -101,43 +120,77 @@ export function BatchForm({
       return;
     }
 
-    const mapped: IngredientPrice[] = rawIngredients.map((ri: any) => ({
-      id: ri.ingredient.id,
-      name: ri.ingredient.name,
-      amount: ri.amount,
-      unit: ri.unit,
-      defaultPrice: ri.ingredient.defaultPrice,
-      priceOverride: null,
-      recipeIngredientId: ri.id,
-    }));
-    setIngredients(mapped);
-  }, [rawIngredients]);
+    // Build a map of saved batch ingredient price overrides by recipeIngredientId
+    const savedOverrides = new Map<string, number | null>();
+    if (batch?.ingredients) {
+      for (const bi of batch.ingredients) {
+        savedOverrides.set(bi.recipeIngredientId, bi.price);
+      }
+    }
 
-  const handlePriceChange = useCallback(
-    (recipeIngredientId: string, value: string) => {
-      const parsed = value === "" ? null : parseFloat(value);
-      setIngredients((prev) =>
-        prev.map((ing) =>
-          ing.recipeIngredientId === recipeIngredientId
-            ? { ...ing, priceOverride: parsed }
-            : ing,
-        ),
-      );
-    },
-    [],
-  );
+    const mapped: IngredientPrice[] = rawIngredients.map((ri: any) => {
+      const priceOverride = savedOverrides.get(ri.id);
+      const overrideVal = priceOverride !== undefined ? priceOverride : null;
+      return {
+        id: ri.ingredient.id,
+        name: ri.ingredient.name,
+        amount: ri.amount,
+        unit: ri.unit,
+        defaultPrice: ri.ingredient.defaultPrice,
+        priceOverride: overrideVal,
+        rawValue:
+          overrideVal !== null
+            ? overrideVal.toFixed(2)
+            : ri.ingredient.defaultPrice != null
+              ? ri.ingredient.defaultPrice.toFixed(2)
+              : "",
+        recipeIngredientId: ri.id,
+      };
+    });
+    setIngredients(mapped);
+  }, [rawIngredients, batch?.ingredients]);
+
+  const handlePriceChange = useCallback((recipeIngredientId: string, value: string) => {
+    const parsed = value === "" ? null : parseFloat(value);
+    setIngredients((prev) =>
+      prev.map((ing) =>
+        ing.recipeIngredientId === recipeIngredientId
+          ? { ...ing, priceOverride: parsed, rawValue: value }
+          : ing,
+      ),
+    );
+  }, []);
+
+  const handleBlurPrice = useCallback((recipeIngredientId: string) => {
+    setIngredients((prev) =>
+      prev.map((ing) => {
+        if (ing.recipeIngredientId !== recipeIngredientId) return ing;
+        const raw = parseFloat(ing.rawValue);
+        if (ing.rawValue === "" || !isNaN(raw)) {
+          const displayVal = ing.rawValue === "" ? "" : raw.toFixed(2);
+          return { ...ing, rawValue: displayVal };
+        }
+        return { ...ing, rawValue: "" };
+      }),
+    );
+    setFocusedRecipeId(null);
+  }, []);
 
   const handleUseDefault = useCallback(
     (recipeIngredientId: string) => {
       setIngredients((prev) =>
         prev.map((ing) =>
           ing.recipeIngredientId === recipeIngredientId
-            ? { ...ing, priceOverride: null }
+            ? {
+                ...ing,
+                priceOverride: null,
+                rawValue: ing.defaultPrice != null ? ing.defaultPrice.toFixed(2) : "",
+              }
             : ing,
         ),
       );
     },
-    [],
+    [ingredients],
   );
 
   const calculateCost = useCallback((ing: IngredientPrice): number => {
@@ -151,16 +204,17 @@ export function BatchForm({
     <form onSubmit={handleSubmit}>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
-          <FormField label="Recipe" htmlFor="batch-recipe" required error={formState.errors.recipeId}>
+          <FormField
+            label="Recipe"
+            htmlFor="batch-recipe"
+            required
+            error={formState.errors.recipeId as any}
+          >
             <Controller
               name="recipeId"
               control={control}
               render={({ field }) => (
-                <select
-                  id="batch-recipe"
-                  {...field}
-                  className="select select-bordered w-full"
-                >
+                <select id="batch-recipe" {...field} className="select select-bordered w-full">
                   <option value="">Select a recipe...</option>
                   {recipes.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -172,7 +226,7 @@ export function BatchForm({
             />
           </FormField>
 
-          <FormField label="Status" htmlFor="batch-status" error={formState.errors.status}>
+          <FormField label="Status" htmlFor="batch-status" error={formState.errors.status as any}>
             <Controller
               name="status"
               control={control}
@@ -198,15 +252,9 @@ export function BatchForm({
                     id="batch-start-date"
                     {...field}
                     type="date"
-                    value={
-                      field.value
-                        ? new Date(field.value).toISOString().split("T")[0]
-                        : ""
-                    }
+                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
                     onChange={(e) => {
-                      field.onChange(
-                        e.target.value ? new Date(e.target.value) : null,
-                      );
+                      field.onChange(e.target.value ? new Date(e.target.value) : null);
                     }}
                     className="input input-bordered w-full"
                   />
@@ -224,11 +272,7 @@ export function BatchForm({
                     {...field}
                     type="date"
                     className="input input-bordered w-full"
-                    value={
-                      field.value
-                        ? new Date(field.value).toISOString().split("T")[0]
-                        : ""
-                    }
+                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
                   />
                 )}
               />
@@ -334,9 +378,7 @@ export function BatchForm({
         {ingredients.length > 0 && (
           <>
             <div className="divider pt-0">
-              <span className="text-sm text-base-content/50">
-                Ingredient Costs
-              </span>
+              <span className="text-sm text-base-content/50">Ingredient Costs</span>
             </div>
 
             <div className="overflow-x-auto">
@@ -345,7 +387,7 @@ export function BatchForm({
                   <tr className="border-base-300">
                     <th className="w-1/3">Ingredient</th>
                     <th className="w-24">Amount</th>
-                    <th className="w-32">Unit Price ($)</th>
+                    <th className="w-32">Unit Price (£)</th>
                     <th className="w-24">Cost</th>
                     <th className="w-12"></th>
                   </tr>
@@ -370,25 +412,22 @@ export function BatchForm({
                               type="number"
                               step="0.01"
                               min="0"
-                              placeholder={
-                                hasDefault
-                                  ? `$${ing.defaultPrice!.toFixed(2)}`
-                                  : "—"
-                              }
+                              placeholder={hasDefault ? `£${ing.defaultPrice!.toFixed(2)}` : "—"}
                               className="input input-bordered input-xs flex-1 min-w-0"
                               value={
-                                hasOverride
-                                  ? ing.priceOverride!.toFixed(2)
-                                  : hasDefault || ing.defaultPrice == null
-                                    ? ""
-                                    : ing.defaultPrice.toFixed(2)
+                                focusedRecipeId === ing.recipeIngredientId
+                                  ? ing.rawValue
+                                  : hasOverride && ing.priceOverride != null
+                                    ? ing.priceOverride.toFixed(2)
+                                    : ing.defaultPrice != null
+                                      ? ing.defaultPrice.toFixed(2)
+                                      : ""
                               }
-                              onChange={(e) =>
-                                handlePriceChange(
-                                  ing.recipeIngredientId,
-                                  e.target.value,
-                                )
-                              }
+                              onChange={(e) => {
+                                setFocusedRecipeId(ing.recipeIngredientId);
+                                handlePriceChange(ing.recipeIngredientId, e.target.value);
+                              }}
+                              onBlur={() => handleBlurPrice(ing.recipeIngredientId)}
                               onFocus={(e) => {
                                 if (!hasOverride && hasDefault) {
                                   e.target.select();
@@ -400,18 +439,14 @@ export function BatchForm({
                                 type="button"
                                 className="btn btn-ghost btn-xs btn-square"
                                 title="Reset to default"
-                                onClick={() =>
-                                  handleUseDefault(ing.recipeIngredientId)
-                                }
+                                onClick={() => handleUseDefault(ing.recipeIngredientId)}
                               >
                                 <X className="w-3 h-3" />
                               </button>
                             )}
                           </div>
                         </td>
-                        <td className="font-mono text-sm">
-                          ${cost.toFixed(2)}
-                        </td>
+                        <td className="font-mono text-sm">£{cost.toFixed(2)}</td>
                         <td></td>
                       </tr>
                     );
@@ -422,7 +457,7 @@ export function BatchForm({
                     <td colSpan={3} className="text-right pr-4">
                       Total Ingredient Cost:
                     </td>
-                    <td className="text-lg">${total.toFixed(2)}</td>
+                    <td className="text-lg">£{total.toFixed(2)}</td>
                     <td></td>
                   </tr>
                 </tfoot>

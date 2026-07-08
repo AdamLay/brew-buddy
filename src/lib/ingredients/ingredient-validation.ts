@@ -14,6 +14,7 @@ export const ingredientSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
   description: z.string().optional(),
   type: z.enum(INGREDIENT_TYPES).nullable().optional(),
+  defaultPrice: z.coerce.number().min(0).nullable().optional(),
 });
 
 export type IngredientData = z.infer<typeof ingredientSchema>;

@@ -23,11 +23,13 @@ model Recipe {
 }
 
 model Ingredient {
-  id            String           @id @default(cuid())
-  name          String
-  description   String?
-  type          String?          // e.g. "fruit", "sugar", "yeast", "spice"
-  recipes       RecipeIngredient[]
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  type            String?          // e.g. "fruit", "sugar", "yeast", "spice"
+  defaultPrice    Float?
+  recipes         RecipeIngredient[]
+  batchIngredients BatchIngredient[]
 }
 
 model RecipeIngredient {
@@ -40,6 +42,7 @@ model RecipeIngredient {
   createdAt      DateTime @default(now())
   recipe         Recipe   @relation(fields: [recipeId], references: id, onDelete: Cascade)
   ingredient     Ingredient @relation(fields: [ingredientId], references: id, onDelete: Cascade)
+  batchIngredients BatchIngredient[]
 
   @@unique([recipeId, ingredientId])
 }
@@ -57,8 +60,24 @@ model Batch {
   fgReading       Float?   // actual final gravity reading
   currentGravity  Float?
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  batchUpdates    BatchUpdate[]
+  updatedAt       DateTime        @updatedAt
+  batchUpdates      BatchUpdate[]
+  ingredients     BatchIngredient[]
+}
+
+model BatchIngredient {
+  id                 String   @id @default(cuid())
+  batchId            String
+  recipeIngredientId String
+  ingredientId       String
+  amount             Float
+  unit               String
+  price              Float?
+  batch              Batch    @relation(fields: [batchId], references: id, onDelete: Cascade)
+  recipeIngredient   RecipeIngredient @relation(fields: [recipeIngredientId], references: [id], onDelete: Cascade)
+  ingredient         Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([batchId, recipeIngredientId])
 }
 
 model BatchUpdate {

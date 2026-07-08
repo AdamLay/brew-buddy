@@ -1,7 +1,7 @@
-import { Pencil } from "lucide-react";
+import type { IngredientWithCount } from "#/lib/ingredients/use-ingredients";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { Link } from "@tanstack/react-router";
-import type { IngredientWithCount } from "#/lib/ingredients/use-ingredients";
+import { Pencil } from "lucide-react";
 
 function formatType(type: string | null) {
   if (!type) return null;
@@ -34,6 +34,7 @@ export function IngredientTable({
                 <th className="text-base-content font-semibold">Name</th>
                 <th className="text-base-content font-semibold">Type</th>
                 <th className="text-base-content font-semibold">Description</th>
+                <th className="text-base-content font-semibold">Price</th>
                 <th className="text-base-content font-semibold">Used In</th>
                 <th className="text-base-content font-semibold text-right">Actions</th>
               </tr>
@@ -55,6 +56,11 @@ export function IngredientTable({
                   </td>
                   <td className="text-sm text-base-content/70">
                     {truncate(ingredient.description, 60)}
+                  </td>
+                  <td>
+                    {ingredient.defaultPrice != null
+                      ? `£${ingredient.defaultPrice.toFixed(2)}`
+                      : "—"}
                   </td>
                   <td className="text-base-content">{ingredient._count.recipes}</td>
                   <td className="text-right">
@@ -112,11 +118,19 @@ export function IngredientCards({
               </div>
             </div>
 
-            {ingredient.type && (
-              <span className="badge badge-outline text-secondary mt-1">
-                {formatType(ingredient.type)}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {ingredient.type && (
+                <span className="badge badge-outline text-secondary mt-1">
+                  {formatType(ingredient.type)}
+                </span>
+              )}
+
+              {ingredient.defaultPrice != null && (
+                <div className="text-sm font-medium text-base-content">
+                  £{ingredient.defaultPrice.toFixed(2)}
+                </div>
+              )}
+            </div>
 
             {ingredient.description && (
               <p className="text-sm text-base-content/60 line-clamp-2 mt-auto">

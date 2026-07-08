@@ -1,10 +1,11 @@
+import DownloadLabelButton from "#/components/batch/DownloadLabelButton.tsx";
 import { BatchUpdateForm } from "@/components/batch-updates/BatchUpdateForm";
 import { BatchUpdatesList, type BatchUpdate } from "@/components/batch-updates/BatchUpdatesList";
 import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
 import { prisma } from "@/lib/db";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Calendar, Printer } from "lucide-react";
+import { Calendar, Pencil } from "lucide-react";
 
 const getBatch = createServerFn({ method: "GET" })
   .validator((data: { id: string }) => data)
@@ -129,21 +130,11 @@ function BatchDetailPage() {
           )}
           <div className="divider my-2" />
           <div className="grid grid-cols-2 gap-2">
-            <Link
-              to="/batches/$id/edit"
-              params={{ id: batch.id }}
-              className="btn btn-primary btn-sm"
-            >
+            <Link to="/batches/$id/edit" params={{ id: batch.id }} className="btn btn-primary">
+              <Pencil className="w-4 h-4" />
               Edit Batch
             </Link>
-            <Link
-              to="/batches/$id/label"
-              params={{ id: batch.id }}
-              className="btn btn-outline btn-sm gap-2"
-            >
-              <Printer className="w-4 h-4" />
-              Print Label
-            </Link>
+            <DownloadLabelButton batch={batch} />
           </div>
         </div>
       </div>

@@ -9,12 +9,14 @@ export type Ingredient = {
   name: string;
   description?: string | null;
   type?: string | null;
+  defaultPrice?: number | null;
 };
 
 type FormValues = {
   name: string;
   description?: string;
   type?: (typeof INGREDIENT_TYPES)[number] | null;
+  defaultPrice?: number | null;
 };
 
 interface IngredientFormProps {
@@ -34,6 +36,7 @@ export function IngredientForm({
       name: ingredient?.name ?? "",
       description: ingredient?.description ?? "",
       type: ((ingredient?.type as (typeof INGREDIENT_TYPES)[number]) ?? "") || "",
+      defaultPrice: ingredient?.defaultPrice ?? null,
     },
   });
 
@@ -94,6 +97,29 @@ export function IngredientForm({
                 {...field}
                 className="textarea textarea-bordered w-full h-24"
                 placeholder="Optional description..."
+                value={field.value ?? ""}
+              />
+            )}
+          />
+        </FormField>
+
+        <FormField
+          label="Default Price"
+          htmlFor="ingredient-default-price"
+          error={formState.errors.defaultPrice}
+        >
+          <Controller
+            name="defaultPrice"
+            control={control}
+            render={({ field }) => (
+              <input
+                id="ingredient-default-price"
+                {...field}
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                className="input input-bordered w-full"
                 value={field.value ?? ""}
               />
             )}

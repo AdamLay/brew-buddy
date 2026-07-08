@@ -1,6 +1,6 @@
+import { BatchForm } from "@/components/batch/BatchForm";
 import { useUpdateBatch } from "@/lib/batches/use-batches";
 import { prisma } from "@/lib/db";
-import { BatchForm } from "@/components/batch/BatchForm";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { ArrowLeft } from "lucide-react";
@@ -10,7 +10,15 @@ const getBatch = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     return prisma.batch.findUnique({
       where: { id: data.id },
-      include: { recipe: { select: { id: true, name: true } } },
+      include: {
+        recipe: { select: { id: true, name: true } },
+        ingredients: {
+          include: {
+            ingredient: { select: { id: true, name: true, defaultPrice: true } },
+            recipeIngredient: { select: { amount: true, unit: true } },
+          },
+        },
+      },
     });
   });
 
@@ -68,6 +76,7 @@ function EditBatchPage() {
             recipes={loaderData.recipes}
             submitLabel="Update Batch"
             onSubmit={async (data) => {
+              console.log("Submitting data:", data);
               await mutation.mutateAsync(data);
             }}
           />

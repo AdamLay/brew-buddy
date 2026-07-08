@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Beaker, BookOpen, Home, Sprout } from "lucide-react";
+import { Beaker, BookOpen, Calendar, Home, Sprout } from "lucide-react";
 
 export function Navbar() {
   const { pathname } = useLocation();
@@ -52,6 +52,15 @@ export function Navbar() {
               >
                 <Beaker className="w-4 h-4 mr-1" />
                 Batches
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/calendar"
+                className={`btn btn-ghost btn-sm ${pathname.startsWith("/calendar") ? "btn-active text-primary" : "hover:bg-base-100"}`}
+              >
+                <Calendar className="w-4 h-4 mr-1" />
+                Calendar
               </Link>
             </li>
           </ul>

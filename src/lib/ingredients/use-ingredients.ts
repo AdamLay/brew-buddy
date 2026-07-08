@@ -9,6 +9,7 @@ import { ingredientSchema, type IngredientData } from "./ingredient-validation";
 const fetchIngredientsFn = createServerFn({ method: "GET" }).handler(async () => {
   const ingredients = await prisma.ingredient.findMany({
     include: { _count: { select: { recipes: true } } },
+    orderBy: { name: "asc" },
   });
   return ingredients;
 });
