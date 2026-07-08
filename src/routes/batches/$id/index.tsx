@@ -105,10 +105,16 @@ function BatchDetailPage() {
               </div>
             )}
             {batch.ogReading && (
-              <div>
-                <span className="text-xs text-base-content/50">OG</span>
-                <p>{batch.ogReading}</p>
-              </div>
+              <>
+                <div>
+                  <span className="text-xs text-base-content/50">OG</span>
+                  <p>{batch.ogReading}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-base-content/50">Est. ABV</span>
+                  <p>{((batch.ogReading - 1.0) * 131.25).toFixed(1)}%</p>
+                </div>
+              </>
             )}
             {batch.fgReading && (
               <div>
