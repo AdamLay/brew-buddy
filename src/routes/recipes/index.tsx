@@ -1,36 +1,42 @@
-import { prisma } from "@/lib/db";
-import { createFileRoute } from "@tanstack/react-router";
-import type { Recipe as RecipeType } from "@/generated/prisma/client";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRecipes } from "@/lib/use-recipes";
+import { deleteRecipe as deleteRecipeFn } from "@/lib/recipe-mutations";
+import { recipeKeys } from "@/lib/query-keys";
 
 export const Route = createFileRoute("/recipes/")({
   component: RecipesPage,
-  loader: async () => {
-    const recipes = await prisma.recipe.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { _count: { select: { batches: true } } },
-    });
-    return { recipes };
-  },
 });
 
 function RecipesPage() {
-  const { recipes } = Route.useLoaderData();
+  const queryClient = useQueryClient();
+  const { data: recipes, isLoading } = useRecipes();
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteRecipeFn(id as any),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+    },
+  });
 
   return (
     <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Recipes</h1>
-        <a href="/recipes/new" className="btn btn-primary">
+        <Link to="/recipes/new" className="btn btn-primary">
           New Recipe
-        </a>
+        </Link>
       </div>
 
-      {recipes.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-16">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      ) : !recipes || recipes.length === 0 ? (
         <div className="text-center py-16 bg-base-100 rounded-xl">
           <p className="text-gray-500 text-lg mb-4">No recipes yet. Create your first recipe!</p>
-          <a href="/recipes/new" className="btn btn-primary">
+          <Link to="/recipes/new" className="btn btn-primary">
             Create Recipe
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="card bg-base-100 shadow-xl">
@@ -48,7 +54,7 @@ function RecipesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recipes.map((recipe: RecipeType & { _count: { batches: number } }) => (
+                  {recipes.map((recipe) => (
                     <tr key={recipe.id} className="hover">
                       <td>
                         <div>
@@ -81,10 +87,13 @@ function RecipesPage() {
                       <td>{recipe._count.batches}</td>
                       <td className="text-right">
                         <div className="flex gap-2 justify-end">
-                          <a href={`/recipes/${recipe.id}/edit`} className="btn btn-sm btn-ghost">
+                          <Link
+                            to={`/recipes/${recipe.id}/edit` as any}
+                            className="btn btn-sm btn-ghost"
+                          >
                             Edit
-                          </a>
-                          <DeleteButton id={recipe.id} />
+                          </Link>
+                          <DeleteButton onDelete={() => deleteMutation.mutate(recipe.id)} />
                         </div>
                       </td>
                     </tr>
@@ -99,20 +108,20 @@ function RecipesPage() {
   );
 }
 
-// ponytail: inline delete with POST instead of GET to prevent CSRF; confirm dialog replaced with inline toggle
-function DeleteButton({ id }: { id: string }) {
+function DeleteButton({ onDelete }: { onDelete: () => void }) {
   return (
-    <form action={`/recipes/${id}/delete`} method="post" className="inline">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (confirm("Are you sure? All associated batches and ingredients will also be deleted.")) {
+          onDelete();
+        }
+      }}
+      className="inline"
+    >
       <button
         type="submit"
         className="btn btn-sm btn-ghost text-error"
-        onClick={(e) => {
-          if (
-            !confirm("Are you sure? All associated batches and ingredients will also be deleted.")
-          ) {
-            e.preventDefault();
-          }
-        }}
       >
         Delete
       </button>

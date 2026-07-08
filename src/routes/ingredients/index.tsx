@@ -1,41 +1,41 @@
-import { prisma } from "@/lib/db";
-import { createFileRoute } from "@tanstack/react-router";
-import type { Ingredient as IngredientType } from "@/generated/prisma/client";
-
-const DESCRIPTION_TRUNCATE = 60;
-
-type IngredientWithCount = IngredientType & { _count: { recipes: number } };
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useIngredients } from "@/lib/use-ingredients";
+import { useDeleteIngredient } from "@/lib/use-ingredient-mutations";
+import { ingredientKeys as ik } from "@/lib/query-keys";
 
 export const Route = createFileRoute("/ingredients/")({
   component: IngredientsPage,
-  loader: async () => {
-    const ingredients = await prisma.ingredient.findMany({
-      include: { _count: { select: { recipes: true } } },
-    });
-    return { ingredients };
-  },
 });
 
 function IngredientsPage() {
-  const { ingredients } = Route.useLoaderData();
+  const queryClient = useQueryClient();
+  const { data: ingredients, isLoading } = useIngredients();
+  const deleteMutation = useDeleteIngredient(() => {
+    queryClient.invalidateQueries({ queryKey: ik.lists() });
+  });
 
   return (
     <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Ingredients</h1>
-        <a href="/ingredients/new" className="btn btn-primary">
+        <Link to="/ingredients/new" className="btn btn-primary">
           New Ingredient
-        </a>
+        </Link>
       </div>
 
-      {ingredients.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-16">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      ) : !ingredients || ingredients.length === 0 ? (
         <div className="text-center py-16 bg-base-100 rounded-xl">
           <p className="text-gray-500 text-lg mb-4">
             No ingredients yet. Create your first ingredient!
           </p>
-          <a href="/ingredients/new" className="btn btn-primary">
+          <Link to="/ingredients/new" className="btn btn-primary">
             Create Ingredient
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="card bg-base-100 shadow-xl">
@@ -52,7 +52,7 @@ function IngredientsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ingredients.map((ingredient: IngredientWithCount) => (
+                  {ingredients.map((ingredient) => (
                     <tr key={ingredient.id} className="hover">
                       <td>
                         <div className="font-medium">{ingredient.name}</div>
@@ -69,8 +69,8 @@ function IngredientsPage() {
                       </td>
                       <td className="text-sm">
                         {ingredient.description
-                          ? ingredient.description.length > DESCRIPTION_TRUNCATE
-                            ? ingredient.description.slice(0, DESCRIPTION_TRUNCATE) + "..."
+                          ? ingredient.description.length > 60
+                            ? ingredient.description.slice(0, 60) + "..."
                             : ingredient.description
                           : "—"}
                       </td>
@@ -83,7 +83,7 @@ function IngredientsPage() {
                           >
                             Edit
                           </a>
-                          <DeleteButton id={ingredient.id} />
+                          <DeleteButton onDelete={() => deleteMutation.mutate(ingredient.id)} />
                         </div>
                       </td>
                     </tr>
@@ -98,18 +98,18 @@ function IngredientsPage() {
   );
 }
 
-function DeleteButton({ id }: { id: string }) {
+function DeleteButton({ onDelete }: { onDelete: () => void }) {
   return (
-    <form action={`/ingredients/${id}/delete`} method="post" className="inline">
-      <button
-        type="submit"
-        className="btn btn-sm btn-ghost text-error"
-        onClick={(e) => {
-          if (!confirm("Are you sure? This ingredient will be removed from all recipes.")) {
-            e.preventDefault();
-          }
-        }}
-      >
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (confirm("Are you sure? This ingredient will be removed from all recipes.")) {
+          onDelete();
+        }
+      }}
+      className="inline"
+    >
+      <button type="submit" className="btn btn-sm btn-ghost text-error">
         Delete
       </button>
     </form>

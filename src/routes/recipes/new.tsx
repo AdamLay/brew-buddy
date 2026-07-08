@@ -1,36 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { useCreateRecipe } from "@/lib/use-recipe-mutations";
 import { RecipeForm } from "@/components/recipe/RecipeForm";
-import { z } from "zod";
-
-const errorSchema = z.object({
-  error: z.string().optional(),
-});
 
 export const Route = createFileRoute("/recipes/new")({
   component: NewRecipePage,
-  validateSearch: errorSchema,
 });
 
 function NewRecipePage() {
-  const { error } = Route.useSearch();
+  const mutation = useCreateRecipe();
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <a href="/recipes" className="btn btn-ghost btn-sm mb-4">
+      <Link to="/recipes" className="btn btn-ghost btn-sm mb-4">
         &larr; Back to Recipes
-      </a>
+      </Link>
       <h1 className="text-3xl font-bold mb-6">New Recipe</h1>
-      {error && (
+      {mutation.isError && (
         <div className="alert alert-error mb-6">
-          <span>{error}</span>
+          <span>{(mutation.error as Error).message}</span>
         </div>
       )}
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <form action="/api/recipes" method="post">
-            <input type="hidden" name="_method" value="create" />
-            <RecipeForm />
-          </form>
+          <RecipeForm
+            onSubmit={async (data) => {
+              await mutation.mutateAsync(data);
+            }}
+          />
         </div>
       </div>
     </div>

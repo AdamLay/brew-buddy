@@ -9,6 +9,11 @@ import tailwindcss from "@tailwindcss/vite";
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
+  build: {
+    rollupOptions: {
+      external: ["@prisma/client", "@prisma/adapter-pg"],
+    },
+  },
 });
 
 export default config;

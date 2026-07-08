@@ -15,11 +15,6 @@ const mainAdapter = new PrismaPg({
   ssl: isLocal(env.DATABASE_URL) ? false : { rejectUnauthorized: false },
 });
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    adapter: mainAdapter,
-    //log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  });
+export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter: mainAdapter });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
