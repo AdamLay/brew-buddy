@@ -1,6 +1,6 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { useCreateRecipe } from "@/lib/use-recipe-mutations";
+import { useCreateRecipe } from "#/lib/recipes/use-recipes";
 import { RecipeForm } from "@/components/recipe/RecipeForm";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/recipes/new")({
   component: NewRecipePage,

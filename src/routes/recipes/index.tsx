@@ -1,6 +1,5 @@
+import { deleteRecipeFn, useRecipes } from "#/lib/recipes/use-recipes";
 import { recipeKeys } from "@/lib/query-keys";
-import { deleteRecipeFn } from "@/lib/recipe-mutations";
-import { useRecipes } from "@/lib/use-recipes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 

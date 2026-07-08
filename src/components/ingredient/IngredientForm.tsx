@@ -1,4 +1,4 @@
-import { INGREDIENT_TYPES, ingredientSchema } from "@/lib/ingredient-validation";
+import { INGREDIENT_TYPES, ingredientSchema } from "#/lib/ingredients/ingredient-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 

@@ -1,5 +1,5 @@
+import { useCreateIngredient } from "#/lib/ingredients/use-ingredients";
 import { IngredientForm } from "@/components/ingredient/IngredientForm";
-import { useCreateIngredient } from "@/lib/use-ingredient-mutations";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/ingredients/new")({

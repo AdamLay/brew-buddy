@@ -1,8 +1,7 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { useIngredients } from "@/lib/use-ingredients";
-import { useDeleteIngredient } from "@/lib/use-ingredient-mutations";
+import { useDeleteIngredient, useIngredients } from "#/lib/ingredients/use-ingredients";
 import { ingredientKeys as ik } from "@/lib/query-keys";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/ingredients/")({
   component: IngredientsPage,

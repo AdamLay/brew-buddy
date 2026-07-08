@@ -1,6 +1,6 @@
+import { useUpdateIngredient } from "#/lib/ingredients/use-ingredients";
 import { IngredientForm } from "@/components/ingredient/IngredientForm";
 import { prisma } from "@/lib/db";
-import { useUpdateIngredient } from "@/lib/use-ingredient-mutations";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 

@@ -1,6 +1,6 @@
+import { useUpdateRecipe } from "#/lib/recipes/use-recipes";
 import { RecipeForm } from "@/components/recipe/RecipeForm";
 import { prisma } from "@/lib/db";
-import { useUpdateRecipe } from "@/lib/use-recipe-mutations";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
