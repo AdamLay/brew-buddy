@@ -120,7 +120,6 @@ export function IngredientForm({
           />
         </div>
 
-        <input type="submit" />
         <button type="submit" className="btn btn-primary mt-4">
           {submitLabel}
         </button>

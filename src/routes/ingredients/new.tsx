@@ -32,6 +32,7 @@ function NewIngredientPage() {
         <div className="card-body">
           <IngredientForm
             onSubmit={async (data) => {
+              console.log("Submitting ingredient:", data);
               await mutation.mutateAsync(data);
             }}
           />

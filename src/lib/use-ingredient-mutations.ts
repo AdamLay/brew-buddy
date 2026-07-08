@@ -1,7 +1,7 @@
 import {
-  createIngredient as createIngredientFn,
-  deleteIngredient as deleteIngredientFn,
-  updateIngredient as updateIngredientFn,
+  createIngredientFn,
+  deleteIngredientFn,
+  updateIngredientFn,
 } from "@/lib/ingredient-mutations";
 import { ingredientKeys } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ export function useCreateIngredient(onSuccess?: () => void) {
   return useMutation({
     mutationFn: (data: IngredientInput) => {
       console.log("useCreateIngredient mutation called with data:", data);
-      return createIngredientFn(data as any);
+      return createIngredientFn(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ingredientKeys.lists() });
