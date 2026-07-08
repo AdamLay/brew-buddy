@@ -1,10 +1,9 @@
 import { getQueryClient } from "@/router";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Link, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Beaker, Home } from "lucide-react";
-import { Link } from "@tanstack/react-router";
 import { Navbar } from "../components/Navbar";
 import appCss from "../styles.css?url";
 
@@ -68,7 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </head>
         <body className="min-h-screen flex flex-col bg-base-200">
           <Navbar />
-          <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+          <main className="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
           <TanStackDevtools
             config={{
               position: "bottom-right",
@@ -86,5 +85,3 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
-
-

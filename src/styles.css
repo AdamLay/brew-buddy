@@ -4,13 +4,17 @@
   themes: apothecary --default;
 }
 
-:root {
+@plugin "daisyui/theme" {
+  name: apothecary;
+  default: true; /* set as default */
+  prefersdark: true; /* set as default dark mode (prefers-color-scheme:dark) */
+  color-scheme: dark; /* color of browser-provided UI */
+
   /* Apothecary dark theme — deep warm darks with golden amber accents */
   --color-base-100: oklch(18.2% 0.005 30.928);
   --color-base-200: oklch(16.382% 0.004 30.928);
   --color-base-300: oklch(14.493% 0.004 30.928);
   --color-base-content: oklch(92.777% 0.022 31.833);
-  --color-base-conce: oklch(92.777% 0.022 31.833);
 
   --color-primary: oklch(70.044% 0.168 43.12);
   --color-primary-content: oklch(18.2% 0.005 30.928);
@@ -36,7 +40,6 @@
   --color-error: oklch(52.625% 0.182 15.625);
   --color-error-content: oklch(92.777% 0.022 31.833);
 
-  --radius-box-shadow: 0.5rem;
   /* border radius */
   --radius-selector: 1rem;
   --radius-field: 0.25rem;

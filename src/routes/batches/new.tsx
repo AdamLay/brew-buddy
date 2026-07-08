@@ -29,7 +29,10 @@ function NewBatchPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Link to="/batches" className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary">
+      <Link
+        to="/batches"
+        className="btn btn-ghost btn-sm mb-4 text-base-content/70 hover:text-primary"
+      >
         <ArrowLeft className="w-4 h-4 mr-1" />
         Back to Batches
       </Link>

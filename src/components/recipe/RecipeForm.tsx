@@ -194,7 +194,10 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
 
         <div className="space-y-4">
           {formIngredients.map((ing, index) => (
-            <div key={index} className="card bg-base-200 p-4 space-y-3 relative border border-base-300">
+            <div
+              key={index}
+              className="card bg-base-200 p-4 space-y-3 relative border border-base-300"
+            >
               <button
                 type="button"
                 onClick={() => removeIngredient(index)}
@@ -255,7 +258,11 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
             </div>
           ))}
 
-          <button type="button" onClick={addIngredient} className="btn btn-outline w-fit btn-sm text-base-content/70 hover:text-base-content hover:border-base-content/40">
+          <button
+            type="button"
+            onClick={addIngredient}
+            className="btn btn-outline w-fit btn-sm text-base-content/70 hover:text-base-content hover:border-base-content/40"
+          >
             <Plus className="w-4 h-4 mr-1" />
             Add Ingredient
           </button>
@@ -263,11 +270,17 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
 
         <div className="flex gap-3 justify-end">
           {recipe ? (
-            <a href={`/recipes/${recipe.id}/edit`} className="btn btn-ghost text-base-content/70 hover:text-base-content">
+            <a
+              href={`/recipes/${recipe.id}/edit`}
+              className="btn btn-ghost text-base-content/70 hover:text-base-content"
+            >
               Cancel
             </a>
           ) : (
-            <a href="/recipes" className="btn btn-ghost text-base-content/70 hover:text-base-content">
+            <a
+              href="/recipes"
+              className="btn btn-ghost text-base-content/70 hover:text-base-content"
+            >
               Cancel
             </a>
           )}
