@@ -46,7 +46,39 @@ export function useBatchesByRecipe(recipeId: string) {
 export const createBatchFn = createServerFn({ method: "POST" })
   .validator(batchSchema)
   .handler(async ({ data }) => {
-    return await prisma.batch.create({ data });
+    const { ingredients, ...batchData } = data;
+
+    const include = {
+      recipe: { select: { name: true, brewType: true } },
+      ingredients: {
+        include: {
+          ingredient: { select: { name: true, defaultPrice: true } },
+          recipeIngredient: {
+            select: { amount: true, unit: true, ingredientId: true },
+          },
+        },
+      },
+    };
+
+    if (ingredients && ingredients.length > 0) {
+      return await prisma.batch.create({
+        data: {
+          ...batchData,
+          ingredients: {
+            create: ingredients.map((ing) => ({
+              recipeIngredientId: ing.recipeIngredientId,
+              price: ing.priceOverride,
+            })),
+          } as any,
+        },
+        include,
+      } as any);
+    }
+
+    return await prisma.batch.create({
+      data: batchData as any,
+      include,
+    });
   });
 
 export function useCreateBatch(onSuccess?: () => void) {
@@ -74,7 +106,8 @@ export const updateBatchFn = createServerFn({ method: "POST" })
       endDate = new Date();
     }
 
-    return prisma.batch.update({ where: { id: data.id }, data: { ...data.data, endDate } });
+    const { ingredients: _, ...batchUpdate } = data.data;
+    return prisma.batch.update({ where: { id: data.id }, data: { ...batchUpdate, endDate } as any });
   });
 
 export function useUpdateBatch(id: string, onSuccess?: () => void) {
@@ -108,5 +141,25 @@ export function useDeleteBatch(onSuccess?: () => void) {
       queryClient.invalidateQueries({ queryKey: batchKeys.lists() });
       onSuccess?.();
     },
+  });
+}
+
+export const getRecipeIngredientsFn = createServerFn({ method: "GET" })
+  .validator((data: { recipeId: string }) => data)
+  .handler(async ({ data }) => {
+    return prisma.recipeIngredient.findMany({
+      where: { recipeId: data.recipeId },
+      include: {
+        ingredient: { select: { id: true, name: true, defaultPrice: true } },
+      },
+      orderBy: { ingredient: { name: "asc" } },
+    });
+  });
+
+export function useRecipeIngredients(recipeId: string) {
+  return useQuery({
+    queryKey: batchKeys.recipeIngredients(recipeId),
+    queryFn: async () => await getRecipeIngredientsFn({ data: { recipeId } }),
+    enabled: !!recipeId,
   });
 }

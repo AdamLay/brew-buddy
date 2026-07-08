@@ -1,9 +1,10 @@
 import { useCreateBatch } from "@/lib/batches/use-batches";
 import { prisma } from "@/lib/db";
 import { BatchForm } from "@/components/batch/BatchForm";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { ArrowLeft } from "lucide-react";
+import { z } from "zod";
 
 const getRecipes = createServerFn({ method: "GET" }).handler(async () => {
   return prisma.recipe.findMany({
@@ -12,8 +13,13 @@ const getRecipes = createServerFn({ method: "GET" }).handler(async () => {
   });
 });
 
+const searchSchema = z.object({
+  recipeId: z.string().optional(),
+});
+
 export const Route = createFileRoute("/batches/new")({
   component: NewBatchPage,
+  validateSearch: searchSchema,
   loader: async () => {
     const recipes = await getRecipes();
     return { recipes };
@@ -22,6 +28,7 @@ export const Route = createFileRoute("/batches/new")({
 
 function NewBatchPage() {
   const navigate = useNavigate();
+  const search = useSearch({ from: Route.fullPath });
   const loaderData = Route.useLoaderData();
   const mutation = useCreateBatch(() => {
     void navigate({ to: "/batches" });
@@ -51,6 +58,7 @@ function NewBatchPage() {
         <div className="card-body">
           <BatchForm
             recipes={loaderData.recipes}
+            preselectedRecipeId={search.recipeId}
             onSubmit={async (data) => {
               await mutation.mutateAsync(data);
             }}

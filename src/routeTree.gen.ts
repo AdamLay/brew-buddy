@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecipesIndexRouteImport } from './routes/recipes/index'
 import { Route as IngredientsIndexRouteImport } from './routes/ingredients/index'
@@ -22,6 +23,11 @@ import { Route as IngredientsIdEditRouteImport } from './routes/ingredients/$id/
 import { Route as BatchesIdLabelRouteImport } from './routes/batches/$id/label'
 import { Route as BatchesIdEditRouteImport } from './routes/batches/$id/edit'
 
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -85,6 +91,7 @@ const BatchesIdEditRoute = BatchesIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/batches/new': typeof BatchesNewRoute
   '/ingredients/new': typeof IngredientsNewRoute
   '/recipes/new': typeof RecipesNewRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/batches/new': typeof BatchesNewRoute
   '/ingredients/new': typeof IngredientsNewRoute
   '/recipes/new': typeof RecipesNewRoute
@@ -114,6 +122,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/batches/new': typeof BatchesNewRoute
   '/ingredients/new': typeof IngredientsNewRoute
   '/recipes/new': typeof RecipesNewRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calendar'
     | '/batches/new'
     | '/ingredients/new'
     | '/recipes/new'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calendar'
     | '/batches/new'
     | '/ingredients/new'
     | '/recipes/new'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/calendar'
     | '/batches/new'
     | '/ingredients/new'
     | '/recipes/new'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarRoute: typeof CalendarRoute
   BatchesNewRoute: typeof BatchesNewRoute
   IngredientsNewRoute: typeof IngredientsNewRoute
   RecipesNewRoute: typeof RecipesNewRoute
@@ -188,6 +201,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -277,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarRoute: CalendarRoute,
   BatchesNewRoute: BatchesNewRoute,
   IngredientsNewRoute: IngredientsNewRoute,
   RecipesNewRoute: RecipesNewRoute,
