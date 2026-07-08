@@ -15,3 +15,5 @@ export const ingredientSchema = z.object({
   description: z.string().optional(),
   type: z.enum(INGREDIENT_TYPES).nullable().optional(),
 });
+
+export type IngredientData = z.infer<typeof ingredientSchema>;

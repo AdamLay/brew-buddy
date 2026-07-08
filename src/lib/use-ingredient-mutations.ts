@@ -5,20 +5,12 @@ import {
 } from "@/lib/ingredient-mutations";
 import { ingredientKeys } from "@/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-export type IngredientInput = {
-  name: string;
-  description?: string | null;
-  type?: "juice" | "fruit" | "sugar" | "yeast" | "hops" | "spice" | "other" | null;
-};
+import type { IngredientData } from "./ingredient-validation";
 
 export function useCreateIngredient(onSuccess?: () => void) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: IngredientInput) => {
-      console.log("useCreateIngredient mutation called with data:", data);
-      return createIngredientFn(data);
-    },
+    mutationFn: (data: IngredientData) => createIngredientFn({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ingredientKeys.lists() });
       onSuccess?.();
@@ -29,7 +21,7 @@ export function useCreateIngredient(onSuccess?: () => void) {
 export function useUpdateIngredient(id: string, onSuccess?: () => void) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: IngredientInput) => updateIngredientFn({ id, data } as any),
+    mutationFn: (data: IngredientData) => updateIngredientFn({ data: { id, data } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ingredientKeys.lists() });
       queryClient.invalidateQueries({ queryKey: ingredientKeys.detail(id) });
@@ -41,7 +33,7 @@ export function useUpdateIngredient(id: string, onSuccess?: () => void) {
 export function useDeleteIngredient(onSuccess?: () => void) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deleteIngredientFn(id as any),
+    mutationFn: (id: string) => deleteIngredientFn({ data: id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ingredientKeys.lists() });
       onSuccess?.();
