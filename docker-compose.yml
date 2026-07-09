@@ -1,5 +1,5 @@
 services:
-  db:
+  brew-buddy-db:
     container_name: brew-buddy-db
     image: postgres:17-alpine
     restart: unless-stopped
@@ -12,14 +12,14 @@ services:
     volumes:
       - bbdata:/var/lib/postgresql/data
 
-  app:
+  brew-buddy-app:
     build: .
-    container_name: brew-buddy
+    container_name: brew-buddy-app
     restart: unless-stopped
     depends_on:
-      - db
+      - brew-buddy-db
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/brew-buddy?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@brew-buddy-db:5432/brew-buddy?schema=public
     ports:
       - "3100:3000"
 
