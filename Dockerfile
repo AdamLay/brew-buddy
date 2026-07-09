@@ -28,17 +28,18 @@ WORKDIR /app
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-COPY package.json pnpm-lock.yaml .npmrc ./
+COPY --from=build /app/prisma prisma
+COPY package.json pnpm-lock.yaml .npmrc prisma.config.ts ./
 
 # Install deps without scripts (Prisma engines download at runtime)
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy built output from build stage
-COPY --from=build /app/.output .
+COPY --from=build /app/.output .output
 
 ENV PORT=3000
 ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["node", "server/index.mjs"]
+CMD ["pnpm", "run", "start"]

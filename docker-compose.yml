@@ -9,7 +9,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - bbdata:/var/lib/postgresql/data
 
   app:
     build: .
@@ -21,3 +21,5 @@ services:
     ports:
       - "3000:3000"
 
+volumes:
+  bbdata:
