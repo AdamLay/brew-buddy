@@ -1,5 +1,5 @@
 # ---- Build stage ----
-FROM node:26-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN npx prisma generate
 RUN pnpm build
 
 # ---- Production stage ----
-FROM node:26-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
