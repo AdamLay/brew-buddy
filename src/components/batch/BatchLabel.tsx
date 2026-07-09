@@ -15,6 +15,7 @@ export function BatchLabel({ recipeName, brewType, startDate, notes, batchId }: 
 
   return (
     <div
+      data-label
       className="border-2 border-black rounded-lg p-4"
       style={{
         maxWidth: "480px",
@@ -23,11 +24,11 @@ export function BatchLabel({ recipeName, brewType, startDate, notes, batchId }: 
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
         {/* Left: QR code */}
         <div
-          className="flex-shrink-0"
+          className="shrink-0"
           style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}
         >
           <QRCodeSVG value={batchUrl} size={140} bgColor="#ffffff" fgColor="#000000" />
-          <span className="text-[10px] text-black/50">{batchUrl}</span>
+          {/* <span className="text-[10px] text-black/50">{batchUrl}</span> */}
         </div>
 
         {/* Right: label info */}

@@ -1,9 +1,10 @@
+import { BatchLabel } from "#/components/batch/BatchLabel";
 import DownloadLabelButton from "#/components/batch/DownloadLabelButton.tsx";
 import { BatchUpdateForm } from "@/components/batch-updates/BatchUpdateForm";
 import { BatchUpdatesList, type BatchUpdate } from "@/components/batch-updates/BatchUpdatesList";
+import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
 import { BATCH_STATUSES } from "@/lib/batches/batch-validation";
 import { useUpdateBatchStatus } from "@/lib/batches/use-batches";
-import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
 import { prisma } from "@/lib/db";
 import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
@@ -161,6 +162,18 @@ function BatchDetailPage() {
               Edit Batch
             </Link>
             <DownloadLabelButton batch={batch} />
+          </div>
+
+          <div className="flex justify-center mt-2">
+            <div className="bg-white rounded-lg shadow-lg p-2">
+              <BatchLabel
+                recipeName={batch.recipe.name}
+                brewType={batch.recipe.brewType}
+                startDate={batch.startDate}
+                notes={batch.notes}
+                batchId={batch.id}
+              />
+            </div>
           </div>
         </div>
       </div>
