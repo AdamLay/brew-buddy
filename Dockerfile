@@ -27,7 +27,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY --from=build /app/prisma prisma
-COPY package.json pnpm-lock.yaml .npmrc prisma.config.ts ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc prisma.config.ts ./
 
 RUN pnpm install --frozen-lockfile
 
