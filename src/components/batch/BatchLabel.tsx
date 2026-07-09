@@ -16,10 +16,8 @@ export function BatchLabel({ recipeName, brewType, startDate, notes, batchId }: 
   return (
     <div
       data-label
-      className="border-2 border-black rounded-lg p-4"
-      style={{
-        maxWidth: "480px",
-      }}
+      className="bg-white border-2 border-black rounded-lg p-4 shadow-sm w-[12cm] h-[5.5cm]"
+      style={{ maxWidth: "480px" }}
     >
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start" }}>
         {/* Left: QR code */}
@@ -33,16 +31,17 @@ export function BatchLabel({ recipeName, brewType, startDate, notes, batchId }: 
 
         {/* Right: label info */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-lg leading-tight">{recipeName}</h3>
-          <p className="text-sm text-black/60 mb-2">{brewType}</p>
+          <h3 className="font-bold title-font text-lg leading-tight text-zinc-900">{recipeName}</h3>
+          <p className="text-sm text-zinc-500 mb-2">{brewType}</p>
 
           <div className="text-sm space-y-0.5">
             <p>
-              <span className="font-medium text-black/60">Start:</span> {formattedDate}
+              <span className="font-medium text-zinc-700">Start:</span>{" "}
+              <span className="font-medium text-zinc-500">{formattedDate}</span>
             </p>
           </div>
 
-          {notes && <p className="text-sm mt-2 leading-snug">{notes}</p>}
+          {notes && <p className="text-sm mt-2 leading-snug text-zinc-700">{notes}</p>}
         </div>
       </div>
     </div>

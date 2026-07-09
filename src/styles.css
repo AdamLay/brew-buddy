@@ -70,7 +70,8 @@ body {
 
 h1,
 .navbar-brand,
-.brand-link {
+.brand-link,
+.title-font {
   font-family: "Limelight", cursive;
   font-weight: 400;
 }
