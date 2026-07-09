@@ -4,7 +4,7 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { batchSchema, type BatchData } from "./batch-validation";
+import { BATCH_STATUSES, batchSchema, type BatchData } from "./batch-validation";
 
 const fetchBatchesFn = createServerFn({ method: "GET" }).handler(async () => {
   const batches = await prisma.batch.findMany({
@@ -100,7 +100,10 @@ export const createBatchFn = createServerFn({ method: "POST" })
         };
       });
 
-      console.log("[createBatchFn] Ingredients to create:", JSON.stringify(batchIngredients, null, 2));
+      console.log(
+        "[createBatchFn] Ingredients to create:",
+        JSON.stringify(batchIngredients, null, 2),
+      );
       console.log("[createBatchFn] batchData keys:", Object.keys(batchData));
       console.log("[createBatchFn] batchData.status:", (batchData as any).status);
       console.log("[createBatchFn] batchData.recipeId:", (batchData as any).recipeId);
@@ -152,14 +155,11 @@ export const updateBatchFn = createServerFn({ method: "POST" })
 
     // Auto-set endDate when status changes away from PLANNING/FERMENTING
     let endDate = data.data.endDate;
-    if (data.data.status && !["PLANNING", "FERMENTING"].includes(data.data.status)) {
+    if (data.data.status === "COMPLETE") {
       endDate = new Date();
     }
 
     const { ingredients, recipeId, ...batchUpdate } = data.data;
-
-    // Build the base update payload (exclude fields that shouldn't go into batch.update())
-    const { notes, startDate, status, ogReading, fgReading, currentGravity, batchSize, ...batchData } = batchUpdate as any;
 
     const include = {
       recipe: { select: { name: true, brewType: true } },
@@ -177,7 +177,7 @@ export const updateBatchFn = createServerFn({ method: "POST" })
     if (!ingredients || ingredients.length === 0) {
       return prisma.batch.update({
         where: { id: data.id },
-        data: { ...batchData, endDate },
+        data: { ...batchUpdate, endDate },
         include,
       });
     }
@@ -215,7 +215,7 @@ export const updateBatchFn = createServerFn({ method: "POST" })
       // Update batch fields
       await tx.batch.update({
         where: { id: data.id },
-        data: { ...batchData, endDate },
+        data: { ...batchUpdate, endDate, status: data.data.status },
       });
 
       // Delete existing ingredients and create new ones
@@ -238,6 +238,47 @@ export function useUpdateBatch(id: string, onSuccess?: () => void) {
   return useMutation({
     mutationFn: (data: BatchData) => updateBatchFn({ data: { id, data } }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: batchKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: batchKeys.detail(id) });
+      onSuccess?.();
+    },
+  });
+}
+
+export const updateBatchStatusFn = createServerFn({ method: "POST" })
+  .validator(z.object({ id: z.string(), status: z.enum(BATCH_STATUSES) }))
+  .handler(async ({ data }) => {
+    const existing = await prisma.batch.findUnique({
+      where: { id: data.id },
+    });
+    if (!existing) throw new Error("NOT_FOUND");
+
+    let endDate: Date | undefined;
+    if (data.status === "COMPLETE") {
+      endDate = new Date();
+    }
+
+    return prisma.batch.update({
+      where: { id: data.id },
+      data: { status: data.status, ...(endDate ? { endDate } : {}) },
+      include: {
+        recipe: { select: { name: true, brewType: true } },
+        ingredients: {
+          include: {
+            ingredient: { select: { name: true, defaultPrice: true } },
+            recipeIngredient: { select: { amount: true, unit: true } },
+          },
+        },
+      },
+    });
+  });
+
+export function useUpdateBatchStatus(id: string, onSuccess?: () => void) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (status: (typeof BATCH_STATUSES)[number]) =>
+      updateBatchStatusFn({ data: { id, status } }),
+    onSuccess: (_data, _vars) => {
       queryClient.invalidateQueries({ queryKey: batchKeys.lists() });
       queryClient.invalidateQueries({ queryKey: batchKeys.detail(id) });
       onSuccess?.();

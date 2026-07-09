@@ -1,6 +1,8 @@
 import DownloadLabelButton from "#/components/batch/DownloadLabelButton.tsx";
 import { BatchUpdateForm } from "@/components/batch-updates/BatchUpdateForm";
 import { BatchUpdatesList, type BatchUpdate } from "@/components/batch-updates/BatchUpdatesList";
+import { BATCH_STATUSES } from "@/lib/batches/batch-validation";
+import { useUpdateBatchStatus } from "@/lib/batches/use-batches";
 import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
 import { prisma } from "@/lib/db";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -40,6 +42,7 @@ function BatchDetailPage() {
   const batchId = loaderData.batch.id;
   const { data: updates } = useBatchUpdates(batchId);
   const mutation = useCreateBatchUpdate(batchId);
+  const statusMutation = useUpdateBatchStatus(batchId);
 
   const handleAddUpdate = async (data: {
     batchId: string;
@@ -52,6 +55,10 @@ function BatchDetailPage() {
 
   const batch = loaderData.batch;
   const batchUpdates = (updates as BatchUpdate[] | undefined) || [];
+
+  const handleChangeStatus = async (status: string) => {
+    await statusMutation.mutateAsync(status as (typeof BATCH_STATUSES)[number]);
+  };
 
   const statusColors: Record<string, string> = {
     PLANNING: "badge-info",
@@ -69,9 +76,19 @@ function BatchDetailPage() {
           <span className="text-sm text-base-content/50 uppercase">{batch.recipe.brewType}</span>
         </div>
         <div className="flex items-center gap-2 mb-3">
-          <span className={`badge ${statusColors[batch.status] || "badge-ghost"}`}>
-            {batch.status}
-          </span>
+          <select
+            className={`select select-sm ${statusColors[batch.status] || "badge-ghost"} border-0`}
+            value={batch.status}
+            onChange={async (e) => {
+              await handleChangeStatus(e.target.value);
+            }}
+          >
+            {BATCH_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s.charAt(0).toUpperCase() + s.slice(1)}
+              </option>
+            ))}
+          </select>
           <span className="text-xs text-base-content/50">
             Created {new Date(batch.createdAt).toLocaleDateString()}
           </span>
