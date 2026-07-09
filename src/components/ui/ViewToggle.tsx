@@ -1,11 +1,11 @@
-import { List, LayoutGrid } from "lucide-react";
+import { LayoutGrid, List } from "lucide-react";
 import type { ViewMode } from "./use-view-toggle";
 
 export function ViewToggle({ mode, onToggle }: { mode: ViewMode; onToggle: () => void }) {
   return (
     <div className="join">
       <button
-        className={`btn btn-sm join-item ${mode === "table" ? "btn-primary text-primary-content" : "btn-ghost"}`}
+        className={`btn btn-sm join-item ${mode === "table" ? "btn-secondary" : "btn-ghost"}`}
         onClick={onToggle}
         aria-label="Table view"
         title="Table view"
@@ -13,7 +13,7 @@ export function ViewToggle({ mode, onToggle }: { mode: ViewMode; onToggle: () =>
         <List className="w-4 h-4" />
       </button>
       <button
-        className={`btn btn-sm join-item ${mode === "cards" ? "btn-primary text-primary-content" : "btn-ghost"}`}
+        className={`btn btn-sm join-item ${mode === "cards" ? "btn-secondary" : "btn-ghost"}`}
         onClick={onToggle}
         aria-label="Card view"
         title="Card view"

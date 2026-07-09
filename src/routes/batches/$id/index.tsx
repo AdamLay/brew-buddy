@@ -5,7 +5,7 @@ import { BATCH_STATUSES } from "@/lib/batches/batch-validation";
 import { useUpdateBatchStatus } from "@/lib/batches/use-batches";
 import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
 import { prisma } from "@/lib/db";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Calendar, Pencil, ShoppingCart } from "lucide-react";
 
@@ -40,6 +40,7 @@ export const Route = createFileRoute("/batches/$id/")({
 function BatchDetailPage() {
   const loaderData = Route.useLoaderData();
   const batchId = loaderData.batch.id;
+  const router = useRouter();
   const { data: updates } = useBatchUpdates(batchId);
   const mutation = useCreateBatchUpdate(batchId);
   const statusMutation = useUpdateBatchStatus(batchId);
@@ -58,6 +59,7 @@ function BatchDetailPage() {
 
   const handleChangeStatus = async (status: string) => {
     await statusMutation.mutateAsync(status as (typeof BATCH_STATUSES)[number]);
+    await router.invalidate();
   };
 
   const statusColors: Record<string, string> = {

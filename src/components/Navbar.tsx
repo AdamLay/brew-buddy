@@ -29,20 +29,20 @@ export function Navbar() {
             </li>
             <li>
               <Link
-                to="/recipes"
-                className={`btn btn-ghost btn-sm ${pathname.startsWith("/recipes") ? "btn-active text-primary" : "hover:bg-base-100"}`}
-              >
-                <BookOpen className="w-4 h-4 mr-1" />
-                Recipes
-              </Link>
-            </li>
-            <li>
-              <Link
                 to="/ingredients"
                 className={`btn btn-ghost btn-sm ${pathname.startsWith("/ingredients") ? "btn-active text-primary" : "hover:bg-base-100"}`}
               >
                 <Sprout className="w-4 h-4 mr-1" />
                 Ingredients
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/recipes"
+                className={`btn btn-ghost btn-sm ${pathname.startsWith("/recipes") ? "btn-active text-primary" : "hover:bg-base-100"}`}
+              >
+                <BookOpen className="w-4 h-4 mr-1" />
+                Recipes
               </Link>
             </li>
             <li>

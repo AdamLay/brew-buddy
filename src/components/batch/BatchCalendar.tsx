@@ -61,7 +61,13 @@ function DayCell({
 }: {
   date: Date;
   inMonth: boolean;
-  batches: { startDate: string; endDate: string | null; recipe: { name: string; brewType: string }; id: string; status: string }[];
+  batches: {
+    startDate: string;
+    endDate: string | null;
+    recipe: { name: string; brewType: string };
+    id: string;
+    status: string;
+  }[];
   isToday: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -181,10 +187,7 @@ export function BatchCalendar() {
   const currentMonth = viewDate.getMonth();
   const currentYear = viewDate.getFullYear();
 
-  const grid = useMemo(
-    () => getMonthGrid(currentYear, currentMonth),
-    [currentYear, currentMonth]
-  );
+  const grid = useMemo(() => getMonthGrid(currentYear, currentMonth), [currentYear, currentMonth]);
 
   if (isLoading) {
     return (
@@ -216,9 +219,7 @@ export function BatchCalendar() {
 
         {grid.map(({ date, inMonth }: { date: Date; inMonth: boolean }) => {
           const dateStr = date.toISOString().split("T")[0];
-          const dayBatches = batches?.filter((b) =>
-            isDateInBatch(date, b)
-          ) ?? [];
+          const dayBatches = batches?.filter((b) => isDateInBatch(date, b)) ?? [];
 
           return (
             <DayCell
