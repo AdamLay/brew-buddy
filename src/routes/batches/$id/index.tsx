@@ -107,7 +107,7 @@ function BatchDetailPage() {
       <div className="card bg-base-100 shadow-lg border border-base-300 mb-6">
         <div className="card-body">
           <h2 className="card-title">Batch Details</h2>
-          <div className="grid grid-cols-2 gap-4 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
             <div>
               <span className="text-xs text-base-content/50">Start Date</span>
               <p>{batch.startDate ? new Date(batch.startDate).toLocaleDateString() : "—"}</p>
@@ -156,9 +156,13 @@ function BatchDetailPage() {
             </div>
           )}
           <div className="divider my-2" />
-          <div className="grid grid-cols-2 gap-2">
-            <Link to="/batches/$id/edit" params={{ id: batch.id }} className="btn btn-primary">
-              <Pencil className="w-4 h-4" />
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Link
+              to="/batches/$id/edit"
+              params={{ id: batch.id }}
+              className="btn btn-primary flex-1 justify-center sm:justify-start"
+            >
+              <Pencil className="w-4 h-4 mr-1" />
               Edit Batch
             </Link>
             <DownloadLabelButton batch={batch} />

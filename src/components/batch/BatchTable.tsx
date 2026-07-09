@@ -135,7 +135,7 @@ export function BatchCards({
 
             <BatchStatusBadge status={batch.status} />
 
-            <div className="grid grid-cols-2 gap-y-1 text-sm text-base-content/80 mt-1">
+            <div className="grid grid-cols-2 gap-y-1 text-sm text-base-content/80 mt-1 gap-x-2">
               {batch.batchSize != null && (
                 <>
                   <span className="text-base-content/50">Size</span>

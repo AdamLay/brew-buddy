@@ -242,7 +242,7 @@ export function BatchForm({
             />
           </FormField>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField label="Start Date" htmlFor="batch-start-date">
               <Controller
                 name="startDate"
@@ -301,7 +301,7 @@ export function BatchForm({
             <span className="text-sm text-base-content/50">Gravity Readings</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <FormField label="OG" htmlFor="batch-og">
               <Controller
                 name="ogReading"

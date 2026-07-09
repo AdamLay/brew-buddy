@@ -16,7 +16,27 @@ export const Route = createRootRoute({
       },
       {
         name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        content: "width=device-width, initial-scale=1, viewport-fit=cover",
+      },
+      {
+        name: "theme-color",
+        content: "#2e2825",
+      },
+      {
+        name: "apple-mobile-web-app-capable",
+        content: "yes",
+      },
+      {
+        name: "apple-mobile-web-app-status-bar-style",
+        content: "black-translucent",
+      },
+      {
+        name: "apple-mobile-web-app-title",
+        content: "Brew Buddy",
+      },
+      {
+        name: "mobile-web-app-capable",
+        content: "yes",
       },
       {
         title: "Brew Buddy",
@@ -26,6 +46,10 @@ export const Route = createRootRoute({
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "manifest",
+        href: "/manifest.json",
       },
     ],
   }),
@@ -65,7 +89,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           />
           <HeadContent />
         </head>
-        <body className="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black">
+        <body
+          className="min-h-screen flex flex-col bg-base-200 print:bg-white print:text-black"
+          style={{ padding: "env(safe-area-inset-bottom)" }}
+        >
           <Navbar />
           <main className="flex-1 w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0">
             {children}
@@ -82,6 +109,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             ]}
           />
           <Scripts />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); }); }`,
+            }}
+          />
         </body>
       </html>
     </QueryClientProvider>

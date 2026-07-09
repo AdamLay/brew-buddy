@@ -51,11 +51,11 @@ export function BatchUpdatesList({ updates }: BatchUpdatesListProps) {
               </span>
             </div>
             {update.image && (
-              <div className="mt-2 mb-2">
+              <div className="mt-2 mb-2 overflow-hidden">
                 <img
                   src={update.image}
                   alt="Batch update"
-                  className="max-w-xs rounded-lg border border-base-200"
+                  className="w-full max-w-sm rounded-lg border border-base-200 object-cover"
                 />
               </div>
             )}

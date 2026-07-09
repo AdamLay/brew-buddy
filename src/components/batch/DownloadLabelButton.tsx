@@ -20,15 +20,19 @@ export default function DownloadLabelButton({ batch }: { batch: BatchWithRecipe 
         useCORS: true,
       });
 
-      canvas.toBlob((blob: Blob | null) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.download = `label-${batch.recipe.name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
-      }, "image/jpeg", 0.95);
+      canvas.toBlob(
+        (blob: Blob | null) => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.download = `label-${batch.recipe.name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+        },
+        "image/jpeg",
+        0.95,
+      );
     } finally {
       setDownloading(false);
     }
