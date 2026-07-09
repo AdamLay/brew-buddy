@@ -126,7 +126,7 @@ export function IngredientForm({
           />
         </FormField>
 
-        <button type="submit" className="btn btn-primary mt-4">
+        <button type="submit" className="btn btn-primary mt-4 w-full sm:w-auto">
           {submitLabel === "Create Ingredient" ? (
             <>
               <Sprout className="w-4 h-4 mr-1" />

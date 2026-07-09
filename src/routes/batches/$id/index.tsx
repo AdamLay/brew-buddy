@@ -72,15 +72,19 @@ function BatchDetailPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto w-full">
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-2xl font-bold text-base-content">{batch.recipe.name}</h1>
-          <span className="text-sm text-base-content/50 uppercase">{batch.recipe.brewType}</span>
+        <div className="flex items-start sm:items-center justify-between gap-2 mb-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-base-content truncate">
+            {batch.recipe.name}
+          </h1>
+          <span className="text-xs sm:text-sm text-base-content/50 uppercase whitespace-nowrap shrink-0">
+            {batch.recipe.brewType}
+          </span>
         </div>
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
           <select
-            className={`select select-sm ${statusColors[batch.status] || "badge-ghost"} border-0`}
+            className={`select select-sm flex-1 sm:flex-initial ${statusColors[batch.status] || "badge-ghost"} border-0`}
             value={batch.status}
             onChange={async (e) => {
               await handleChangeStatus(e.target.value);
@@ -168,8 +172,8 @@ function BatchDetailPage() {
             <DownloadLabelButton batch={batch} />
           </div>
 
-          <div className="flex justify-center mt-2">
-            <div className="bg-white rounded-lg shadow-lg p-2">
+          <div className="flex justify-center mt-4 overflow-x-auto">
+            <div className="bg-white rounded-lg shadow-lg p-2 shrink-0">
               <BatchLabel
                 recipeName={batch.recipe.name}
                 brewType={batch.recipe.brewType}

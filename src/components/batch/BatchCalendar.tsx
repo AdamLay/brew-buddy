@@ -75,17 +75,17 @@ function DayCell({
 
   return (
     <div
-      className={`min-h-[80px] sm:min-h-[100px] p-1 sm:p-1.5 border rounded-lg transition-colors ${
+      className={`min-h-[60px] xs:min-h-[80px] sm:min-h-[100px] p-0.5 xs:p-1 sm:p-1.5 border rounded-lg transition-colors ${
         inMonth
           ? "border-base-200 bg-base-100 hover:bg-base-200/50"
           : "border-base-200/50 bg-base-100/30"
       }`}
     >
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between px-0.5 xs:px-1">
         <span
-          className={`text-xs sm:text-sm font-medium ${
+          className={`text-[10px] xs:text-xs sm:text-sm font-medium ${
             isToday
-              ? "bg-primary text-primary-content rounded-full w-6 h-6 flex items-center justify-center"
+              ? "bg-primary text-primary-content rounded-full w-5 h-5 xs:w-6 xs:h-6 flex items-center justify-center"
               : inMonth
                 ? "text-base-content"
                 : "text-base-content/30"
@@ -108,7 +108,7 @@ function DayCell({
                     e.preventDefault();
                     setExpanded(true);
                   }}
-                  className="text-[10px] text-base-content/50 hover:text-base-content cursor-pointer"
+                  className="text-[9px] xs:text-[10px] text-base-content/50 hover:text-base-content cursor-pointer w-full text-left p-0.5"
                 >
                   +{batches.length - maxShow} more
                 </button>
@@ -116,7 +116,7 @@ function DayCell({
                 <Link
                   to="/batches/$id"
                   params={{ id: batch.id }}
-                  className={`block text-[10px] truncate rounded px-1 py-px border ${brewTypeColors[batch.recipe.brewType] || "badge-ghost"} bg-opacity-10 hover:opacity-80`}
+                  className={`block text-[9px] xs:text-[10px] truncate rounded px-0.5 xs:px-1 py-px border ${brewTypeColors[batch.recipe.brewType] || "badge-ghost"} bg-opacity-10 hover:opacity-80 min-h-[16px] xs:min-h-[20px]`}
                 >
                   <span className="font-medium">{batch.recipe.name}</span>
                 </Link>

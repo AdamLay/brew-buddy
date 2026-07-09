@@ -381,15 +381,15 @@ export function BatchForm({
               <span className="text-sm text-base-content/50">Ingredient Costs</span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="table table-sm">
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <table className="table table-sm min-w-[400px] sm:min-w-0">
                 <thead>
                   <tr className="border-base-300">
                     <th className="w-1/3">Ingredient</th>
-                    <th className="w-24">Amount</th>
-                    <th className="w-32">Unit Price (£)</th>
-                    <th className="w-24">Cost</th>
-                    <th className="w-12"></th>
+                    <th className="w-20">Amt</th>
+                    <th className="w-28">Price</th>
+                    <th className="w-16">Cost</th>
+                    <th className="w-8"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -454,7 +454,7 @@ export function BatchForm({
                 </tbody>
                 <tfoot>
                   <tr className="bg-primary font-bold text-primary-content">
-                    <td colSpan={3} className="text-right pr-4">
+                    <td colSpan={2} className="text-right pr-4">
                       Total Ingredient Cost:
                     </td>
                     <td className="text-lg">£{total.toFixed(2)}</td>
@@ -466,7 +466,7 @@ export function BatchForm({
           </>
         )}
 
-        <button type="submit" className="btn btn-primary mt-4">
+        <button type="submit" className="btn btn-primary mt-4 w-full sm:w-auto sm:self-start">
           {submitLabel.includes("Create") ? (
             <>
               <Beaker className="w-4 h-4 mr-1" />

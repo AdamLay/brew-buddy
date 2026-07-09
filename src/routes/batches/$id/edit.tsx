@@ -49,8 +49,8 @@ function EditBatchPage() {
   });
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-base-content mb-6">Edit Batch</h1>
+    <div className="max-w-3xl mx-auto w-full">
+      <h1 className="text-2xl sm:text-3xl font-bold text-base-content mb-4 sm:mb-6">Edit Batch</h1>
       {mutation.isSuccess && (
         <div className="alert alert-success mb-6" role="alert">
           <span>Batch updated successfully!</span>
@@ -62,7 +62,7 @@ function EditBatchPage() {
         </div>
       )}
       <div className="card bg-base-100 shadow-lg border border-base-300">
-        <div className="card-body">
+        <div className="card-body p-4 sm:p-6">
           <BatchForm
             batch={loaderData.batch}
             recipes={loaderData.recipes}

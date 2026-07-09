@@ -96,15 +96,15 @@ export function IngredientCards({
   onDelete: (id: string) => () => void;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
       {ingredients.map((ingredient) => (
         <div
           key={ingredient.id}
           className="card bg-base-100 border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
-          <div className="card-body p-5 gap-3">
+          <div className="card-body p-4 sm:p-5 gap-2 sm:gap-3">
             <div className="flex items-start justify-between gap-2">
-              <div className="font-semibold text-base-content text-lg truncate">
+              <div className="font-semibold text-base-content text-base sm:text-lg truncate">
                 {ingredient.name}
               </div>
               <div className="flex gap-1 shrink-0">
@@ -118,9 +118,9 @@ export function IngredientCards({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {ingredient.type && (
-                <span className="badge badge-outline text-secondary mt-1">
+                <span className="badge badge-outline text-secondary badge-sm">
                   {formatType(ingredient.type)}
                 </span>
               )}
@@ -138,7 +138,7 @@ export function IngredientCards({
               </p>
             )}
 
-            <div className="text-sm text-base-content/60 mt-1">
+            <div className="text-xs sm:text-sm text-base-content/60">
               Used in {ingredient._count.recipes} recipe{ingredient._count.recipes !== 1 ? "s" : ""}
             </div>
           </div>

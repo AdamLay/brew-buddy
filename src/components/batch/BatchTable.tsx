@@ -112,16 +112,18 @@ export function BatchCards({
   onDelete: (id: string) => () => void;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
       {batches.map((batch) => (
         <div
           key={batch.id}
-          className={`card bg-base-100 border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer ${onView ? "" : ""}`}
+          className="card bg-base-100 border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
           onClick={() => onView && void window.location.assign(onView(batch.id))}
         >
-          <div className="card-body p-5 gap-3">
+          <div className="card-body p-4 sm:p-5 gap-2 sm:gap-3">
             <div className="flex items-start justify-between gap-2">
-              <div className="font-semibold text-base-content truncate">{batch.recipe.name}</div>
+              <div className="font-semibold text-base-content text-sm sm:text-base truncate">
+                {batch.recipe.name}
+              </div>
               <div className="flex gap-1 shrink-0">
                 <Link
                   to={onEdit(batch.id)}
@@ -135,7 +137,7 @@ export function BatchCards({
 
             <BatchStatusBadge status={batch.status} />
 
-            <div className="grid grid-cols-2 gap-y-1 text-sm text-base-content/80 mt-1 gap-x-2">
+            <div className="grid grid-cols-[auto,1fr] gap-y-1 text-xs sm:text-sm text-base-content/80 mt-1 gap-x-2">
               {batch.batchSize != null && (
                 <>
                   <span className="text-base-content/50">Size</span>

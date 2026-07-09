@@ -206,8 +206,8 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div className="form-control md:col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="form-control sm:col-span-2 lg:col-span-2">
                   <label className="label label-text font-medium required-column">Ingredient</label>
                   <select
                     value={ing.ingredientId}
@@ -268,23 +268,26 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
           </button>
         </div>
 
-        <div className="flex gap-3 justify-end">
+        <div className="flex flex-col sm:flex-row gap-2 justify-end">
           {recipe ? (
             <a
               href={`/recipes/${recipe.id}/edit`}
-              className="btn btn-ghost text-base-content/70 hover:text-base-content"
+              className="btn btn-ghost text-base-content/70 hover:text-base-content w-full sm:w-auto justify-center sm:justify-start"
             >
               Cancel
             </a>
           ) : (
             <a
               href="/recipes"
-              className="btn btn-ghost text-base-content/70 hover:text-base-content"
+              className="btn btn-ghost text-base-content/70 hover:text-base-content w-full sm:w-auto justify-center sm:justify-start"
             >
               Cancel
             </a>
           )}
-          <button type="submit" className="btn btn-primary">
+          <button
+            type="submit"
+            className="btn btn-primary w-full sm:w-auto justify-center sm:justify-start"
+          >
             <Save className="w-4 h-4 mr-1" />
             {recipe ? "Update Recipe" : "Create Recipe"}
           </button>

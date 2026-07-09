@@ -78,15 +78,17 @@ export function RecipeCards({
   onDelete: (id: string) => () => void;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
       {recipes.map((recipe) => (
         <div
           key={recipe.id}
           className="card bg-base-100 border border-base-300 rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
-          <div className="card-body p-5 gap-3">
+          <div className="card-body p-4 sm:p-5 gap-2 sm:gap-3">
             <div className="flex items-start justify-between gap-2">
-              <div className="font-semibold text-base-content text-lg truncate">{recipe.name}</div>
+              <div className="font-semibold text-base-content text-base sm:text-lg truncate">
+                {recipe.name}
+              </div>
               <div className="flex gap-1 shrink-0">
                 <Link
                   to={onEdit(recipe.id) as any}
@@ -106,11 +108,11 @@ export function RecipeCards({
               </p>
             )}
 
-            <div className="flex items-center gap-2 mt-auto">
-              <span className="badge badge-accent">
+            <div className="flex items-center gap-2 mt-auto flex-wrap">
+              <span className="badge badge-accent badge-sm">
                 {recipe.brewType.charAt(0).toUpperCase() + recipe.brewType.slice(1).toLowerCase()}
               </span>
-              <span className="text-sm text-base-content/60">
+              <span className="text-xs sm:text-sm text-base-content/60">
                 {recipe._count.batches} batch{recipe._count.batches !== 1 ? "es" : ""}
               </span>
             </div>

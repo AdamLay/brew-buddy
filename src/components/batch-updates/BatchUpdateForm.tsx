@@ -80,32 +80,30 @@ export function BatchUpdateForm({ batchId, onSubmit }: BatchUpdateFormProps) {
               render={({ field }) => (
                 <div className="flex flex-col gap-1">
                   <label htmlFor="update-image" className="label cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="file"
-                        id="update-image"
-                        accept="image/*"
-                        className="file-input file-input-bordered w-full flex-1"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              const base64String = reader.result as string;
-                              form.setValue("image", base64String, { shouldValidate: true });
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                    </div>
-                    {field.value && (
-                      <span className="text-xs text-base-content/50">
-                        <ImageIcon className="w-3 h-3 inline mr-1" />
-                        Image attached
-                      </span>
-                    )}
+                    <input
+                      type="file"
+                      id="update-image"
+                      accept="image/*"
+                      className="file-input file-input-bordered w-full flex-1"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const base64String = reader.result as string;
+                            form.setValue("image", base64String, { shouldValidate: true });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
                   </label>
+                  {field.value && (
+                    <span className="text-xs text-base-content/50 mt-1">
+                      <ImageIcon className="w-3 h-3 inline mr-1" />
+                      Image attached
+                    </span>
+                  )}
                 </div>
               )}
             />
@@ -127,7 +125,7 @@ export function BatchUpdateForm({ batchId, onSubmit }: BatchUpdateFormProps) {
           />
         </FormField>
 
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary w-full sm:w-auto">
           <Save className="w-4 h-4 mr-1" />
           Add Update
         </button>
