@@ -9,10 +9,9 @@ if (process.env.NODE_ENV !== "production") {
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-const isLocal = (conn: string) => conn?.includes("localhost") || conn?.includes("hyperion");
 const mainAdapter = new PrismaPg({
   connectionString: env.DATABASE_URL,
-  ssl: false, //isLocal(env.DATABASE_URL) ? false : { rejectUnauthorized: false },
+  ssl: false,
 });
 
 export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter: mainAdapter });

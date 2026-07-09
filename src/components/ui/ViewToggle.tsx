@@ -5,7 +5,7 @@ export function ViewToggle({ mode, onToggle }: { mode: ViewMode; onToggle: () =>
   return (
     <div className="join">
       <button
-        className={`btn btn-sm join-item ${mode === "table" ? "btn-secondary" : "btn-ghost"}`}
+        className={`btn btn-sm join-item ${mode === "table" ? "btn-accent" : "btn-ghost"}`}
         onClick={onToggle}
         aria-label="Table view"
         title="Table view"
@@ -13,7 +13,7 @@ export function ViewToggle({ mode, onToggle }: { mode: ViewMode; onToggle: () =>
         <List className="w-4 h-4" />
       </button>
       <button
-        className={`btn btn-sm join-item ${mode === "cards" ? "btn-secondary" : "btn-ghost"}`}
+        className={`btn btn-sm join-item ${mode === "cards" ? "btn-accent" : "btn-ghost"}`}
         onClick={onToggle}
         aria-label="Card view"
         title="Card view"
