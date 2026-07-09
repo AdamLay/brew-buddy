@@ -25,6 +25,8 @@ FROM node:24-alpine
 
 WORKDIR /app
 
+RUN nslookup binaries.prisma.sh
+
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -41,5 +43,7 @@ ENV PORT=3000
 ENV NODE_ENV=production
 
 EXPOSE 3000
+
+
 
 CMD ["pnpm", "run", "start"]
