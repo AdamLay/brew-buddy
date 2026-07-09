@@ -21,7 +21,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/brew-buddy?schema=public
     ports:
-      - "3000:3000"
+      - "3100:3000"
 
 volumes:
   bbdata:
