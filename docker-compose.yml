@@ -9,7 +9,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
 
   app:
     build: .
@@ -17,9 +17,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5433/brew-buddy?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/brew-buddy?schema=public
     ports:
       - "3000:3000"
 
-volumes:
-  pgdata:
