@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: brew-buddy-db
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
@@ -13,6 +14,7 @@ services:
 
   app:
     build: .
+    container_name: brew-buddy
     restart: unless-stopped
     depends_on:
       - db
