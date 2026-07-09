@@ -11,6 +11,7 @@ services:
       - "5433:5432"
     volumes:
       - bbdata:/var/lib/postgresql/data
+    network_mode: host
 
   brew-buddy-app:
     build: .
@@ -22,6 +23,7 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@brew-buddy-db:5432/brew-buddy?schema=public
     ports:
       - "3100:3000"
+    network_mode: host
 
 volumes:
   bbdata:
