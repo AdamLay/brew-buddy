@@ -21,7 +21,7 @@ RUN npx prisma generate
 RUN pnpm build
 
 # ---- Production stage ----
-FROM node:22-alpine
+FROM node:slim
 
 WORKDIR /app
 
