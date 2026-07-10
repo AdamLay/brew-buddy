@@ -1,3 +1,4 @@
+import type { Batch } from "#/generated/prisma/browser.ts";
 import { prisma } from "@/lib/db";
 import { batchKeys } from "@/lib/query-keys";
 import type { UseQueryResult } from "@tanstack/react-query";
@@ -22,7 +23,7 @@ const fetchBatchesFn = createServerFn({ method: "GET" }).handler(async () => {
   return batches;
 });
 
-export type BatchWithRecipe = any & {
+export type BatchWithRecipe = Batch & {
   recipe: { name: string; brewType: string };
 };
 

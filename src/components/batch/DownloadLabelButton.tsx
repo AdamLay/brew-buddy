@@ -47,6 +47,7 @@ export default function DownloadLabelButton({ batch }: { batch: BatchWithRecipe 
             brewType={batch.recipe.brewType}
             startDate={batch.startDate}
             notes={batch.notes}
+            ogReading={batch.ogReading}
             batchId={batch.id}
           />
         </div>

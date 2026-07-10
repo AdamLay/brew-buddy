@@ -1,5 +1,6 @@
 import { BatchLabel } from "#/components/batch/BatchLabel";
 import DownloadLabelButton from "#/components/batch/DownloadLabelButton.tsx";
+import { getAbvFromReading } from "#/lib/util.ts";
 import { BatchUpdateForm } from "@/components/batch-updates/BatchUpdateForm";
 import { BatchUpdatesList, type BatchUpdate } from "@/components/batch-updates/BatchUpdatesList";
 import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
@@ -137,7 +138,7 @@ function BatchDetailPage() {
                 </div>
                 <div>
                   <span className="text-xs text-base-content/50">Est. ABV</span>
-                  <p>{((batch.ogReading - 1.0) * 131.25).toFixed(1)}%</p>
+                  <p>{getAbvFromReading(batch.ogReading).toFixed(1)}%</p>
                 </div>
               </>
             )}
@@ -173,13 +174,14 @@ function BatchDetailPage() {
             <DownloadLabelButton batch={batch} />
           </div>
 
-          <div className="hidden sm:flexjustify-center mt-4 overflow-x-auto">
+          <div className="hidden sm:flex justify-center mt-4 overflow-x-auto">
             <div className="bg-white rounded-lg shadow-lg p-2 shrink-0">
               <BatchLabel
                 recipeName={batch.recipe.name}
                 brewType={batch.recipe.brewType}
                 startDate={batch.startDate}
                 notes={batch.notes}
+                ogReading={batch.ogReading}
                 batchId={batch.id}
               />
             </div>
