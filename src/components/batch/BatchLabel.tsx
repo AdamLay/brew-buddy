@@ -18,7 +18,7 @@ export function BatchLabel({
   batchId,
   ogReading,
 }: BatchLabelProps) {
-  const baseUrl = (import.meta.env.VITE_BASE_URL as string) || "http://localhost:3000";
+  const baseUrl = window.location.origin;
   const batchUrl = `${baseUrl}/batches/${batchId}`;
   const formattedDate = new Date(startDate).toLocaleDateString();
 
