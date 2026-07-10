@@ -19,6 +19,7 @@ services:
     depends_on:
       - brew-buddy-db
     environment:
+      VITE_BASE_URL: http://brew-buddy.home.arpa
       DATABASE_URL: postgresql://postgres:postgres@brew-buddy-db:5432/brew-buddy?schema=public
     ports:
       - "3100:3000"
