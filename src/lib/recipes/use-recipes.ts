@@ -106,12 +106,62 @@ export const deleteRecipeFn = createServerFn({ method: "POST" })
   .validator(z.string())
   .handler(async ({ data }) => {
     try {
+      console.log("Deleting recipe:", data);
       return await prisma.recipe.delete({ where: { id: data } });
     } catch (err) {
       if ((err as any).code === "P2025") throw new Error("NOT_FOUND");
       throw err;
     }
   });
+
+export const cloneRecipeFn = createServerFn({ method: "POST" })
+  .validator(z.object({ recipeId: z.string() }))
+  .handler(async ({ data }) => {
+    const existing = await prisma.recipe.findUnique({
+      where: { id: data.recipeId },
+      include: { ingredients: true },
+    });
+    if (!existing) throw new Error("RECIPE_NOT_FOUND");
+
+    const copyName = `${existing.name} (Copy)`;
+    return await prisma.$transaction(async (tx) => {
+      console.log("Cloning recipe:", existing.id, "as", copyName);
+      const recipe = await tx.recipe.create({
+        data: {
+          name: copyName,
+          description: existing.description,
+          brewType: existing.brewType,
+          instructions: existing.instructions,
+        },
+      });
+      if (existing.ingredients.length > 0) {
+        await tx.recipeIngredient.createMany({
+          data: existing.ingredients.map((ing) => ({
+            recipeId: recipe.id,
+            ingredientId: ing.ingredientId,
+            amount: ing.amount,
+            unit: ing.unit,
+            notes: ing.notes,
+          })),
+        });
+      }
+      return tx.recipe.findUnique({
+        where: { id: recipe.id },
+        include: { ingredients: { include: { ingredient: true } } },
+      });
+    });
+  });
+
+export function useCloneRecipe(onSuccess?: (id: string) => void) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (recipeId: string) => cloneRecipeFn({ data: { recipeId } }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      onSuccess?.(data!.id);
+    },
+  });
+}
 
 export function useDeleteRecipe(onSuccess?: () => void) {
   const queryClient = useQueryClient();

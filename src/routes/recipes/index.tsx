@@ -1,12 +1,10 @@
-import { deleteRecipeFn, useRecipes } from "#/lib/recipes/use-recipes";
-import { recipeKeys } from "@/lib/query-keys";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { ListShell } from "@/components/ui/ListShell";
+import { useCloneRecipe, useDeleteRecipe, useRecipes } from "#/lib/recipes/use-recipes";
+import { RecipeCards, RecipeTable } from "@/components/recipe/RecipeTable";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ListShell } from "@/components/ui/ListShell";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useViewMode } from "@/components/ui/use-view-toggle";
-import { RecipeTable, RecipeCards } from "@/components/recipe/RecipeTable";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/recipes/")({
   component: RecipesPage,
@@ -14,13 +12,17 @@ export const Route = createFileRoute("/recipes/")({
 
 function RecipesPage() {
   const { data: recipes, isLoading } = useRecipes();
-  const queryClient = useQueryClient();
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteRecipeFn(id as any),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
-    },
+  const navigate = useNavigate();
+  const deleteMutation = useDeleteRecipe();
+  const cloneMutation = useCloneRecipe((newRecipeId: string) => {
+    void navigate({ to: `/recipes/${newRecipeId}/edit` });
   });
+
+  const handleCopy = (id: string) => {
+    if (confirm("Copy this recipe? The copy will include all ingredients.")) {
+      cloneMutation.mutate(id);
+    }
+  };
 
   const [viewMode, toggleView] = useViewMode("recipes");
 
@@ -58,12 +60,14 @@ function RecipesPage() {
           <RecipeTable
             recipes={recipes}
             onEdit={(id) => `/recipes/${id}/edit`}
+            onCopy={handleCopy}
             onDelete={(id) => () => deleteMutation.mutate(id)}
           />
         ) : (
           <RecipeCards
             recipes={recipes}
             onEdit={(id) => `/recipes/${id}/edit`}
+            onCopy={handleCopy}
             onDelete={(id) => () => deleteMutation.mutate(id)}
           />
         )}

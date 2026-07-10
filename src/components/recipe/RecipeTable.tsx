@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Copy, Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { Link } from "@tanstack/react-router";
 import type { RecipeWithCount } from "#/lib/recipes/use-recipes";
@@ -6,10 +6,12 @@ import type { RecipeWithCount } from "#/lib/recipes/use-recipes";
 export function RecipeTable({
   recipes,
   onEdit,
+  onCopy,
   onDelete,
 }: {
   recipes: RecipeWithCount[];
   onEdit: (id: string) => string;
+  onCopy?: (id: string) => void;
   onDelete: (id: string) => () => void;
 }) {
   return (
@@ -49,6 +51,17 @@ export function RecipeTable({
                   <td className="text-base-content">{recipe._count.batches}</td>
                   <td className="text-right">
                     <div className="flex gap-2 justify-end">
+                      {onCopy && (
+                        <button
+                          type="button"
+                          onClick={() => onCopy(recipe.id)}
+                          className="btn btn-sm btn-ghost text-base-content/70 hover:text-info hover:bg-base-200"
+                          aria-label={`Copy ${recipe.name}`}
+                          title="Copy recipe"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      )}
                       <Link
                         to={onEdit(recipe.id) as any}
                         className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary hover:bg-base-200"
@@ -71,10 +84,12 @@ export function RecipeTable({
 export function RecipeCards({
   recipes,
   onEdit,
+  onCopy,
   onDelete,
 }: {
   recipes: RecipeWithCount[];
   onEdit: (id: string) => string;
+  onCopy?: (id: string) => void;
   onDelete: (id: string) => () => void;
 }) {
   return (
@@ -90,6 +105,17 @@ export function RecipeCards({
                 {recipe.name}
               </div>
               <div className="flex gap-1 shrink-0">
+                {onCopy && (
+                  <button
+                    type="button"
+                    onClick={() => onCopy(recipe.id)}
+                    className="btn btn-sm btn-ghost text-base-content/70 hover:text-info"
+                    aria-label={`Copy ${recipe.name}`}
+                    title="Copy recipe"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                )}
                 <Link
                   to={onEdit(recipe.id) as any}
                   className="btn btn-sm btn-ghost text-base-content/70 hover:text-primary"

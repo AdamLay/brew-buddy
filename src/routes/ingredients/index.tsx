@@ -1,12 +1,10 @@
 import { useDeleteIngredient, useIngredients } from "#/lib/ingredients/use-ingredients";
-import { ingredientKeys as ik } from "@/lib/query-keys";
-import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { ListShell } from "@/components/ui/ListShell";
+import { IngredientCards, IngredientTable } from "@/components/ingredient/IngredientTable";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ListShell } from "@/components/ui/ListShell";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useViewMode } from "@/components/ui/use-view-toggle";
-import { IngredientTable, IngredientCards } from "@/components/ingredient/IngredientTable";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/ingredients/")({
   component: IngredientsPage,
@@ -14,10 +12,7 @@ export const Route = createFileRoute("/ingredients/")({
 
 function IngredientsPage() {
   const { data: ingredients, isLoading } = useIngredients();
-  const queryClient = useQueryClient();
-  const deleteMutation = useDeleteIngredient(() => {
-    queryClient.invalidateQueries({ queryKey: ik.lists() });
-  });
+  const deleteMutation = useDeleteIngredient();
 
   const [viewMode, toggleView] = useViewMode("ingredients");
 
