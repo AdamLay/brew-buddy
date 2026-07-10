@@ -1,7 +1,8 @@
-import { Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { Link } from "@tanstack/react-router";
 import type { BatchWithRecipe } from "@/lib/batches/use-batches";
+import { getAbv, getAbvEstimate } from "@/lib/util";
+import { Link } from "@tanstack/react-router";
+import { Pencil } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
   PLANNING: "badge-ghost",
@@ -18,7 +19,7 @@ export function BatchStatusBadge({ status }: { status: string }) {
   );
 }
 
-function formatDate(d: string | null) {
+function formatDate(d: Date | string | null) {
   return d ? new Date(d).toLocaleDateString() : "—";
 }
 
@@ -52,6 +53,7 @@ export function BatchTable({
                 <th className="text-base-content font-semibold">Start</th>
                 <th className="text-base-content font-semibold">OG</th>
                 <th className="text-base-content font-semibold">FG</th>
+                <th className="text-base-content font-semibold">ABV</th>
                 <th className="text-base-content font-semibold text-right">Actions</th>
               </tr>
             </thead>
@@ -77,6 +79,13 @@ export function BatchTable({
                   <td className="text-base-content">{formatDate(batch.startDate)}</td>
                   <td className="text-base-content">{nullable(batch.ogReading)}</td>
                   <td className="text-base-content">{nullable(batch.fgReading)}</td>
+                  <td className="text-base-content">
+                    {batch.ogReading != null
+                      ? batch.fgReading != null
+                        ? getAbv(batch.ogReading, batch.fgReading)
+                        : getAbvEstimate(batch.ogReading)
+                      : "—"}
+                  </td>
                   <td className="text-right">
                     <div className="flex gap-2 justify-end">
                       <Link
@@ -156,6 +165,16 @@ export function BatchCards({
                 <>
                   <span className="text-base-content/50">FG</span>
                   <span>{batch.fgReading}</span>
+                </>
+              )}
+              {batch.ogReading != null && (
+                <>
+                  <span className="text-base-content/50">ABV</span>
+                  <span>
+                    {batch.fgReading != null
+                      ? getAbv(batch.ogReading, batch.fgReading)
+                      : getAbvEstimate(batch.ogReading)}
+                  </span>
                 </>
               )}
             </div>

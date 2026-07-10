@@ -1,4 +1,4 @@
-import { getAbvFromReading } from "#/lib/util.ts";
+import { getAbvEstimate } from "#/lib/util.ts";
 import { QRCodeSVG } from "qrcode.react";
 
 interface BatchLabelProps {
@@ -56,7 +56,7 @@ export function BatchLabel({
                 </p>
                 <p className="text-sm text-right leading-snug text-zinc-700">
                   <span className="font-medium text-zinc-700">ABV:</span>{" "}
-                  {getAbvFromReading(ogReading).toFixed(1)}%
+                  {getAbvEstimate(ogReading)}
                 </p>
               </div>
             )}

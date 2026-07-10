@@ -1,6 +1,6 @@
 import { BatchLabel } from "#/components/batch/BatchLabel";
 import DownloadLabelButton from "#/components/batch/DownloadLabelButton.tsx";
-import { getAbvFromReading } from "#/lib/util.ts";
+import { getAbvEstimate } from "#/lib/util.ts";
 import { BatchUpdateForm } from "@/components/batch-updates/BatchUpdateForm";
 import { BatchUpdatesList, type BatchUpdate } from "@/components/batch-updates/BatchUpdatesList";
 import { useBatchUpdates, useCreateBatchUpdate } from "@/lib/batch-updates/use-batch-updates";
@@ -138,7 +138,7 @@ function BatchDetailPage() {
                 </div>
                 <div>
                   <span className="text-xs text-base-content/50">Est. ABV</span>
-                  <p>{getAbvFromReading(batch.ogReading).toFixed(1)}%</p>
+                  <p>{getAbvEstimate(batch.ogReading)}</p>
                 </div>
               </>
             )}
