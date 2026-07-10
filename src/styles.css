@@ -95,10 +95,8 @@ h6 {
 
 .card-body {
   padding: calc(var(--spacing) * 4);
-}
 
-@media (min-width: var(--breakpoint-sm)) {
-  .card-body {
+  @variant sm {
     padding: calc(var(--spacing) * 6);
   }
 }
