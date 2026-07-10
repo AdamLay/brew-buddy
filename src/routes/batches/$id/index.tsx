@@ -160,19 +160,19 @@ function BatchDetailPage() {
             </div>
           )}
           <div className="divider my-2" />
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex gap-2">
             <Link
               to="/batches/$id/edit"
               params={{ id: batch.id }}
-              className="btn btn-primary flex-1 justify-center sm:justify-start"
+              className="btn btn-primary flex-1 justify-center gap-2"
             >
-              <Pencil className="w-4 h-4 mr-1" />
+              <Pencil className="w-4 h-4" />
               Edit Batch
             </Link>
             <DownloadLabelButton batch={batch} />
           </div>
 
-          <div className="flex justify-center mt-4 overflow-x-auto">
+          <div className="hidden sm:flexjustify-center mt-4 overflow-x-auto">
             <div className="bg-white rounded-lg shadow-lg p-2 shrink-0">
               <BatchLabel
                 recipeName={batch.recipe.name}

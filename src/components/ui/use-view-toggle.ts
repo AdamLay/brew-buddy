@@ -9,11 +9,12 @@ export function useViewMode(entity: string): [ViewMode, () => void] {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mql = window.matchMedia("(max-width: 639px)");
+    const smBreakpoint = getComputedStyle(document.documentElement).getPropertyValue(
+      "--breakpoint-md",
+    );
+    const mql = window.matchMedia(`(max-width: ${smBreakpoint})`);
     setIsMobile(mql.matches);
-    console.log("Is mobile: ", mql.matches);
     const handler = (e: MediaQueryListEvent) => {
-      console.log("Media query changed:", e.matches);
       setIsMobile(e.matches);
     };
     // Listen for changes

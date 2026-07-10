@@ -3,7 +3,7 @@ import type { ViewMode } from "./use-view-toggle";
 
 export function ViewToggle({ mode, onToggle }: { mode: ViewMode; onToggle: () => void }) {
   return (
-    <div className="join hidden sm:block">
+    <div className="join hidden md:block">
       <button
         className={`btn btn-sm join-item  ${mode === "table" ? "btn-accent" : "btn-ghost"}`}
         onClick={onToggle}

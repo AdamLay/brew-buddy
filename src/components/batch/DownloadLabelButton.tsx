@@ -1,8 +1,8 @@
 import { BatchLabel } from "@/components/batch/BatchLabel";
 import type { BatchWithRecipe } from "@/lib/batches/use-batches";
+import html2canvas from "html2canvas-pro";
 import { Download, Loader2 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
-import html2canvas from "html2canvas-pro";
 
 export default function DownloadLabelButton({ batch }: { batch: BatchWithRecipe }) {
   const [downloading, setDownloading] = useState(false);
@@ -53,7 +53,7 @@ export default function DownloadLabelButton({ batch }: { batch: BatchWithRecipe 
       </div>
 
       <button
-        className="btn btn-secondary gap-2 w-full sm:w-auto justify-center sm:justify-start"
+        className="btn btn-secondary flex-1 justify-center gap-2"
         onClick={handleDownload}
         disabled={downloading}
       >
@@ -65,7 +65,7 @@ export default function DownloadLabelButton({ batch }: { batch: BatchWithRecipe 
         <span className="hidden sm:inline">
           {downloading ? "Generating..." : "Download Label as JPG"}
         </span>
-        <span className="sm:hidden">{downloading ? "..." : "Download"}</span>
+        <span className="sm:hidden">{downloading ? "..." : "Label"}</span>
       </button>
     </>
   );
