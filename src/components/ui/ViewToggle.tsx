@@ -3,9 +3,9 @@ import type { ViewMode } from "./use-view-toggle";
 
 export function ViewToggle({ mode, onToggle }: { mode: ViewMode; onToggle: () => void }) {
   return (
-    <div className="join">
+    <div className="join hidden sm:block">
       <button
-        className={`btn btn-sm join-item ${mode === "table" ? "btn-accent" : "btn-ghost"}`}
+        className={`btn btn-sm join-item  ${mode === "table" ? "btn-accent" : "btn-ghost"}`}
         onClick={onToggle}
         aria-label="Table view"
         title="Table view"
