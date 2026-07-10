@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { formatDate } from "#/lib/util.ts";
+import { useBatches } from "@/lib/batches/use-batches";
 import { Link } from "@tanstack/react-router";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { useBatches } from "@/lib/batches/use-batches";
+import { useMemo, useState } from "react";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -38,10 +39,6 @@ function getMonthGrid(year: number, month: number) {
   }
 
   return days;
-}
-
-function formatDate(d: Date) {
-  return d.toLocaleDateString("en-US", { day: "numeric" });
 }
 
 const brewTypeColors: Record<string, string> = {

@@ -5,3 +5,7 @@ export const getAbvEstimate = (ogReading: number) => {
 export const getAbv = (og: number, fg: number) => {
   return ((og - fg) * 131.25).toFixed(1) + "%";
 };
+
+export function formatDate(d: Date | string | null) {
+  return d ? new Date(d).toLocaleDateString() : "—";
+}

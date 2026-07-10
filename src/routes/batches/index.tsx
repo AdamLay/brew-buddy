@@ -1,12 +1,13 @@
+import { BatchCards } from "@/components/batch/BatchCards";
+import { BatchTable } from "@/components/batch/BatchTable";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ListShell } from "@/components/ui/ListShell";
+import { ViewToggle } from "@/components/ui/ViewToggle";
+import { useViewMode } from "@/components/ui/use-view-toggle";
 import { useBatches, useDeleteBatch } from "@/lib/batches/use-batches";
 import { batchKeys as bk } from "@/lib/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ListShell } from "@/components/ui/ListShell";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ViewToggle } from "@/components/ui/ViewToggle";
-import { useViewMode } from "@/components/ui/use-view-toggle";
-import { BatchTable, BatchCards } from "@/components/batch/BatchTable";
 
 export const Route = createFileRoute("/batches/")({
   component: BatchesPage,
