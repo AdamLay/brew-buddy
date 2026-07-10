@@ -1,7 +1,7 @@
 import { BatchForm } from "@/components/batch/BatchForm";
 import { useUpdateBatch } from "@/lib/batches/use-batches";
 import { prisma } from "@/lib/db";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
 const getBatch = createServerFn({ method: "GET" })
@@ -44,8 +44,9 @@ export const Route = createFileRoute("/batches/$id/edit")({
 
 function EditBatchPage() {
   const loaderData = Route.useLoaderData();
+  const navigate = useNavigate();
   const mutation = useUpdateBatch(loaderData.batch.id, () => {
-    window.scrollTo(0, 0);
+    navigate({ to: "/batches/$id", params: { id: loaderData.batch.id } });
   });
 
   return (
