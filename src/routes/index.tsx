@@ -7,6 +7,12 @@ export const Route = createFileRoute("/")({
 
 const features = [
   {
+    icon: Sprout,
+    title: "Manage Ingredients",
+    desc: "Keep a master list of your fruits, sugars, yeasts, and spices. Always know what's in stock.",
+    href: "/ingredients",
+  },
+  {
     icon: BookOpen,
     title: "Plan Recipes",
     desc: "Define your ingredients and instructions for every cider, mead, or brew you'll ever make.",
@@ -17,12 +23,6 @@ const features = [
     title: "Track Batches",
     desc: "Record gravity readings, status, and tasting notes from planning to the final pour.",
     href: "/batches",
-  },
-  {
-    icon: Sprout,
-    title: "Manage Ingredients",
-    desc: "Keep a master list of your fruits, sugars, yeasts, and spices. Always know what's in stock.",
-    href: "/ingredients",
   },
 ];
 
