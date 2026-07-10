@@ -92,3 +92,13 @@ h5,
 h6 {
   font-family: "Cormorant Garamond", serif;
 }
+
+.card-body {
+  padding: calc(var(--spacing) * 4);
+}
+
+@media (min-width: var(--breakpoint-sm)) {
+  .card-body {
+    padding: calc(var(--spacing) * 6);
+  }
+}

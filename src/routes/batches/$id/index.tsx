@@ -73,18 +73,19 @@ function BatchDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto w-full">
-      <div className="mb-6">
-        <div className="flex items-start sm:items-center justify-between gap-2 mb-1">
+      <div className="mb-4 px-2 sm:px-0">
+        <div className="flex items-center justify-between gap-2 mb-2">
           <h1 className="text-xl sm:text-2xl font-bold text-base-content truncate">
             {batch.recipe.name}
           </h1>
-          <span className="text-xs sm:text-sm text-base-content/50 uppercase whitespace-nowrap shrink-0">
+          {/* <span className="text-xs sm:text-sm text-base-content/50 uppercase whitespace-nowrap shrink-0">
             {batch.recipe.brewType}
-          </span>
+          </span> */}
+          <span className="badge badge-sm badge-accent uppercase">{batch.recipe.brewType}</span>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <select
-            className={`select select-sm flex-1 sm:flex-initial ${statusColors[batch.status] || "badge-ghost"} border-0`}
+            className={`select select-sm ${statusColors[batch.status] || "badge-ghost"} border-0`}
             value={batch.status}
             onChange={async (e) => {
               await handleChangeStatus(e.target.value);
@@ -110,8 +111,8 @@ function BatchDetailPage() {
 
       <div className="card bg-base-100 shadow-lg border border-base-300 mb-6">
         <div className="card-body">
-          <h2 className="card-title">Batch Details</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+          <h2 className="card-title text-xl">Batch Details</h2>
+          <div className="grid grid-cols-2 gap-4 mt-2">
             <div>
               <span className="text-xs text-base-content/50">Start Date</span>
               <p>{batch.startDate ? new Date(batch.startDate).toLocaleDateString() : "—"}</p>
