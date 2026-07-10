@@ -6,6 +6,7 @@ export const recipeKeys = {
   lists: () => [...recipeKeys.all, "list"] as const,
   detail: (id: string) => [...recipeKeys.details(), id] as const,
   details: () => [...recipeKeys.all, "detail"] as const,
+  unitOptions: () => [...recipeKeys.all, "unitOptions"] as const,
 };
 
 export const ingredientKeys = {

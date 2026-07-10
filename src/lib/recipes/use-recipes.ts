@@ -173,3 +173,20 @@ export function useDeleteRecipe(onSuccess?: () => void) {
     },
   });
 }
+
+const fetchRecipeUnitsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const units = await prisma.recipeIngredient.findMany({
+    select: { unit: true },
+    distinct: ["unit"],
+    where: { unit: { not: "" } },
+    orderBy: { unit: "asc" },
+  });
+  return units.map((u) => u.unit);
+});
+
+export function useRecipeUnits(): UseQueryResult<string[], unknown> {
+  return useQuery({
+    queryKey: recipeKeys.unitOptions(),
+    queryFn: async () => await fetchRecipeUnitsFn(),
+  });
+}

@@ -1,6 +1,7 @@
 import { recipeSchema } from "#/lib/recipes/recipe-validation.ts";
 import { FormField } from "@/components/ui/FormFields";
 import { useIngredients } from "@/lib/ingredients/use-ingredients";
+import { useRecipeUnits } from "@/lib/recipes/use-recipes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -49,6 +50,7 @@ interface RecipeFormProps {
 export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
   const { data: ingredients } = useIngredients();
   const ingredientList: Ingredient[] = (ingredients ?? []) as Ingredient[];
+  const { data: units = [] } = useRecipeUnits();
 
   const [formIngredients, setFormIngredients] = useState<
     Array<{ ingredientId: string; amount: number; unit: string; notes: string }>
@@ -104,6 +106,11 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
+      <datalist id="recipe-units">
+        {units.map((unit) => (
+          <option key={unit} value={unit} />
+        ))}
+      </datalist>
       <div className="space-y-6">
         <FormField label="Name" htmlFor="recipe-name" required error={formState.errors.name}>
           <Controller
@@ -238,6 +245,7 @@ export function RecipeForm({ recipe, onSubmit }: RecipeFormProps) {
                   <label className="label label-text font-medium required-column">Unit</label>
                   <input
                     type="text"
+                    list="recipe-units"
                     value={ing.unit}
                     onChange={(e) => updateIngredient(index, "unit", e.target.value)}
                     placeholder="e.g., kg, liters"
