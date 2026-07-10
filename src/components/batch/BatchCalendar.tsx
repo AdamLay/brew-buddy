@@ -163,7 +163,7 @@ function MonthNav({
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <button onClick={onToday} className="btn btn-ghost btn-sm btn-sm min-w-0 px-2">
+        <button onClick={onToday} className="btn btn-ghost btn-sm min-w-0 px-2">
           Today
         </button>
         <button

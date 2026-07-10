@@ -52,13 +52,20 @@ export default function DownloadLabelButton({ batch }: { batch: BatchWithRecipe 
         </div>
       </div>
 
-      <button className="btn btn-secondary gap-2" onClick={handleDownload} disabled={downloading}>
+      <button
+        className="btn btn-secondary gap-2 w-full sm:w-auto justify-center sm:justify-start"
+        onClick={handleDownload}
+        disabled={downloading}
+      >
         {downloading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
+          <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
         ) : (
-          <Download className="w-4 h-4" />
+          <Download className="w-4 h-4 shrink-0" />
         )}
-        {downloading ? "Generating..." : "Download Label as JPG"}
+        <span className="hidden sm:inline">
+          {downloading ? "Generating..." : "Download Label as JPG"}
+        </span>
+        <span className="sm:hidden">{downloading ? "..." : "Download"}</span>
       </button>
     </>
   );

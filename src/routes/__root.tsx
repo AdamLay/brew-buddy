@@ -94,7 +94,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           style={{ padding: "env(safe-area-inset-bottom)" }}
         >
           <Navbar />
-          <main className="flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl print:p-0">
+          <main className="flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:w-6xl print:p-0">
             {children}
           </main>
           <TanStackDevtools

@@ -32,14 +32,14 @@ function HomePage() {
       {/* Hero */}
       <div className="text-center space-y-3 sm:space-y-4 py-8 sm:py-12">
         <div className="flex justify-center mb-4">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <div className="p-4 rounded-full bg-primary/10 flex items-center justify-center">
             <Beaker className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
           </div>
         </div>
         <h1 className="text-3xl sm:text-5xl font-bold text-base-content leading-tight">
           Brew Buddy
         </h1>
-        <h2 className="text-base sm:text-2xl text-base-content/60 max-w-2xl mx-auto px-4">
+        <h2 className="text-lg sm:text-2xl text-base-content/60 max-w-2xl mx-auto px-4">
           Plan recipes. Track batches. Perfect your brew.
         </h2>
       </div>
@@ -55,11 +55,11 @@ function HomePage() {
               className="card bg-base-100 shadow-lg hover:shadow-xl transition-all border border-base-300 hover:border-primary/40"
             >
               <div className="card-body">
-                <div className="flex items-start gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Icon className="w-5 h-5 text-primary" />
                   </div>
-                  <h3 className="card-title text-base sm:text-lg text-base-content">{f.title}</h3>
+                  <h3 className="card-title text-lg text-base-content">{f.title}</h3>
                 </div>
                 <p className="text-sm sm:text-base text-base-content/70 leading-relaxed">
                   {f.desc}
