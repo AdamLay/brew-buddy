@@ -1,6 +1,6 @@
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import type { BatchWithRecipe } from "@/lib/batches/use-batches";
-import { formatDate, getAbv, getAbvEstimate } from "@/lib/util";
+import { formatDate, getAbv, getAbvEstimate, getBatchAge } from "@/lib/util";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 import { BatchStatusBadge } from "./BatchStatusBadge";
@@ -27,7 +27,7 @@ export function BatchCards({
           <div className="card-body gap-2">
             <div className="flex items-center justify-between gap-1">
               <div className="font-semibold text-base-content text-sm sm:text-base truncate">
-                {batch.recipe.name}
+                {batch.recipe.name} ({batch.batchSize != null ? `${batch.batchSize}L` : "—"})
               </div>
               <div className="flex gap-1 shrink-0">
                 <Link
@@ -43,15 +43,13 @@ export function BatchCards({
             <BatchStatusBadge status={batch.status} />
 
             <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm text-base-content/80 mt-1">
-              {batch.batchSize != null && (
-                <p>
-                  <span className="text-base-content/50 mr-1">Size</span>
-                  <span>{batch.batchSize} L</span>
-                </p>
-              )}
               <p>
                 <span className="text-base-content/50 mr-1">Start</span>
                 <span>{formatDate(batch.startDate)}</span>
+              </p>
+              <p>
+                <span className="text-base-content/50 mr-1">Age</span>
+                <span>{getBatchAge(batch.startDate)}</span>
               </p>
               {batch.ogReading != null && (
                 <p>

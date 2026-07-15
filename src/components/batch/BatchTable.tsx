@@ -1,6 +1,6 @@
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import type { BatchWithRecipe } from "@/lib/batches/use-batches";
-import { formatDate, getAbv, getAbvEstimate } from "@/lib/util";
+import { formatDate, getAbv, getAbvEstimate, getBatchAge } from "@/lib/util";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 import { BatchStatusBadge } from "./BatchStatusBadge";
@@ -31,8 +31,8 @@ export function BatchTable({
               <tr>
                 <th className="text-base-content font-semibold">Recipe</th>
                 <th className="text-base-content font-semibold">Status</th>
-                <th className="text-base-content font-semibold">Size (L)</th>
                 <th className="text-base-content font-semibold">Start</th>
+                <th className="text-base-content font-semibold">Age</th>
                 <th className="text-base-content font-semibold">OG</th>
                 <th className="text-base-content font-semibold">FG</th>
                 <th className="text-base-content font-semibold">ABV</th>
@@ -47,7 +47,9 @@ export function BatchTable({
                   onClick={() => onView && void window.location.assign(onView(batch.id))}
                 >
                   <td>
-                    <div className="font-medium text-base-content">{batch.recipe.name}</div>
+                    <div className="font-medium text-base-content">
+                      {batch.recipe.name} ({nullable(batch.batchSize)}L)
+                    </div>
                     {batch.recipe.brewType && (
                       <div className="text-xs text-base-content/50">
                         {batch.recipe.brewType.toLowerCase()}
@@ -57,8 +59,8 @@ export function BatchTable({
                   <td>
                     <BatchStatusBadge status={batch.status} />
                   </td>
-                  <td className="text-base-content">{nullable(batch.batchSize)}</td>
                   <td className="text-base-content">{formatDate(batch.startDate)}</td>
+                  <td className="text-base-content">{getBatchAge(batch.startDate)}</td>
                   <td className="text-base-content">{nullable(batch.ogReading)}</td>
                   <td className="text-base-content">{nullable(batch.fgReading)}</td>
                   <td className="text-base-content">

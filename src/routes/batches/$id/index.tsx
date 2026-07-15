@@ -64,6 +64,17 @@ function BatchDetailPage() {
     await router.invalidate();
   };
 
+  const getBatchAge = (startDate: string | Date) => {
+    const start = new Date(startDate);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (diff < 0) return "0 days";
+    if (diff === 0) return "Today";
+    if (diff === 1) return "1 day";
+    if (diff < 2) return "1 day";
+    return `${diff} days`;
+  };
+
   const statusColors: Record<string, string> = {
     PLANNING: "badge-info",
     FERMENTING: "badge-warning",
@@ -117,6 +128,10 @@ function BatchDetailPage() {
             <div>
               <span className="text-xs text-base-content/50">Start Date</span>
               <p>{batch.startDate ? new Date(batch.startDate).toLocaleDateString() : "—"}</p>
+            </div>
+            <div>
+              <span className="text-xs text-base-content/50">Age</span>
+              <p>{batch.startDate ? getBatchAge(batch.startDate) : "—"}</p>
             </div>
             {batch.endDate && (
               <div>
